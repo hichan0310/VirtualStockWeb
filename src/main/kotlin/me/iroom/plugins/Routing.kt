@@ -23,7 +23,7 @@ fun Application.configureRouting() {
             call.respondText("asdf")
         }
         get("/index.html") {
-            call.respondFile(File(".\\html\\index.html"))
+            call.respondFile(File("몰?루겠음"))
         }
     }
 }
