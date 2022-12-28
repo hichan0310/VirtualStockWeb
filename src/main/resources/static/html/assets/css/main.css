@@ -125,7 +125,8 @@ input, select, textarea {
 	}
 
 	body, input, select, textarea {
-		font-family: "Source Sans Pro", Helvetica, sans-serif;
+		font-family: ONE-Mobile-Title;
+		/*font-family: "Source Sans Pro", Helvetica, sans-serif;*/
 		font-size: 17pt;
 		font-weight: 300;
 		line-height: 1.65;
@@ -1639,7 +1640,8 @@ input, select, textarea {
 					margin-left: 41.66667%;
 				}
 
-				.row > .col-6-xsmall {
+				.row > .
+				-xsmall {
 					width: 50%;
 				}
 
@@ -2015,7 +2017,8 @@ input, select, textarea {
 		outline: 0;
 		padding: 0 1em;
 		text-decoration: none;
-		width: 100%;
+		text-align: center;
+		width: 15%;
 	}
 
 		input[type="text"]:invalid,
@@ -2029,9 +2032,9 @@ input, select, textarea {
 	select {
 		background-size: 1.25rem;
 		background-repeat: no-repeat;
-		background-position: calc(100% - 1rem) center;
-		height: 2.75em;
-		padding-right: 2.75em;
+		background-position: calc(100% - 0.82rem) center;
+		height: 1.75em;
+		padding-right: 2em;
 		text-overflow: ellipsis;
 	}
 
@@ -2075,7 +2078,7 @@ input, select, textarea {
 			display: inline-block;
 			font-size: 1em;
 			font-weight: 300;
-			padding-left: 2.4em;
+			padding-left: 2em;
 			padding-right: 0.75em;
 			position: relative;
 		}
@@ -2090,7 +2093,8 @@ input, select, textarea {
 				text-rendering: auto;
 				line-height: 1;
 				text-transform: none !important;
-				font-family: 'Font Awesome 5 Free';
+				font-family: ONE-Mobile-Title;
+				/*font-family: 'Font Awesome 5 Free';*/
 				font-weight: 900;
 			}
 
@@ -2112,7 +2116,7 @@ input, select, textarea {
 
 		input[type="checkbox"]:checked + label:before,
 		input[type="radio"]:checked + label:before {
-			content: '\f00c';
+			content: '';
 		}
 
 	input[type="checkbox"] + label:before {
