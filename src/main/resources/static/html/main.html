@@ -34,7 +34,6 @@
         <ul>
             <li><a href="#intro" class="active">나히다 소개</a></li>
             <li><a href="#coin">나히다 코인</a></li>
-            <li><a href="#cta">Get Started</a></li>
         </ul>
     </nav>
 
@@ -107,8 +106,8 @@
                     <!--                    <div class="col-12"><span class="image fit"><img src="image/graph.png" alt=""/></span></div>-->
                     <div class="col-12">
                         <div id="chartContainer" style="height: 370px; width: 100%;"></div>
-                        <script src="https://canvasjs.com/static/html/assets/script/canvasjs.min.js"></script>
-                        <script src="https://canvasjs.com/static/html/assets/script/jquery-1.11.1.min.js"></script>
+                        <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+                        <script src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>
                     </div>
 
                     <span style="width: 500px; height: 2.75em; display: block; position: relative; font-size: 22.5px; top:auto; text-align: start">&nbsp;&nbsp;현재 시세 : 1N = 1000W</span>
@@ -145,21 +144,6 @@
                 <ul class="actions special">
                     <li><a href="" class="button large primary">매도(SELL)</a></li>
                     <li><a href="" class="button large primary">매수(BUY)</a></li>
-                </ul>
-            </footer>
-        </section>
-
-        <!-- Get Started -->
-        <section id="cta" class="main special">
-            <header class="major">
-                <h2>Congue imperdiet</h2>
-                <p>Donec imperdiet consequat consequat. Suspendisse feugiat congue<br/>
-                    posuere. Nulla massa urna, fermentum eget quam aliquet.</p>
-            </header>
-            <footer class="major">
-                <ul class="actions special">
-                    <li><a href="/static/html/generic.html" class="button primary">Get Started</a></li>
-                    <li><a href="/static/html/generic.html" class="button">Learn More</a></li>
                 </ul>
             </footer>
         </section>
@@ -230,18 +214,6 @@
         },
         data: [
             {
-                type: "line",
-                xValueFormatString: "HH:mm",
-                yValueFormatString: "N##0.0",
-                markerType: 'none',
-                dataPoints: dataPoints5,
-                color: 'black',
-                visible:false,
-                toolTipContent: "시간: {x}<br />평균 가격: {y}",
-                showInLegend: true,
-                legendText: '5분간 평균',
-            },
-            {
                 type: "candlestick",
                 xValueFormatString: "HH:mm",
                 yValueFormatString: "N##0",
@@ -257,39 +229,273 @@
                 toolTipContent: '시간: {x}<br /><strong>가격:</strong><br />시가: {y[0]}, 종가: {y[3]}<br />고가: {y[1]}, 저가: {y[2]}',
                 color: 'red',
                 risingColor: 'red'
-            }
+            },
+            {
+                type: "line",
+                xValueFormatString: "HH:mm",
+                yValueFormatString: "N##0.0",
+                markerType: 'none',
+                dataPoints: dataPoints5,
+                color: 'black',
+                visible:false,
+                toolTipContent: "시간: {x}<br />평균 가격: {y}",
+                showInLegend: true,
+                legendText: '5분간 평균',
+            },
+            {
+                type: "line",
+                xValueFormatString: "HH:mm",
+                yValueFormatString: "N##0.0",
+                markerType: 'none',
+                dataPoints: dataPoints10,
+                color: 'black',
+                visible:false,
+                toolTipContent: "시간: {x}<br />평균 가격: {y}",
+                showInLegend: true,
+                legendText: '10분간 평균',
+            },
+            {
+                type: "line",
+                xValueFormatString: "HH:mm",
+                yValueFormatString: "N##0.0",
+                markerType: 'none',
+                dataPoints: dataPoints20,
+                color: 'black',
+                visible:false,
+                toolTipContent: "시간: {x}<br />평균 가격: {y}",
+                showInLegend: true,
+                legendText: '20분간 평균',
+            },
+            {
+                type: "line",
+                xValueFormatString: "HH:mm",
+                yValueFormatString: "N##0.0",
+                markerType: 'none',
+                dataPoints: dataPoints60,
+                color: 'black',
+                visible:false,
+                toolTipContent: "시간: {x}<br />평균 가격: {y}",
+                showInLegend: true,
+                legendText: '60분간 평균',
+            },
+            {
+                type: "line",
+                xValueFormatString: "HH:mm",
+                yValueFormatString: "N##0.0",
+                markerType: 'none',
+                dataPoints: dataPoints120,
+                color: 'black',
+                visible:false,
+                toolTipContent: "시간: {x}<br />평균 가격: {y}",
+                showInLegend: true,
+                legendText: '120분간 평균',
+            },
         ]
     };
     var chart = new CanvasJS.Chart("chartContainer", chartData);
         var chartLoad = function () {
 
         var data = [
-            [2022, 12, 15, 1, 0, 91, 97, 81, 82],
-            [2022, 12, 15, 1, 1, 80, 92, 79, 87],
-            [2022, 12, 15, 1, 2, 89, 94, 87, 89],
-            [2022, 12, 15, 1, 3, 90, 97, 86, 94],
-            [2022, 12, 15, 1, 4, 94, 102, 93, 101],
-            [2022, 12, 15, 1, 5, 101, 101, 94, 97],
-            [2022, 12, 15, 1, 6, 97, 102, 96, 101],
-            [2022, 12, 15, 1, 7, 101, 102, 97, 98],
-            [2022, 12, 15, 1, 8, 98, 105, 97, 105],
-            [2022, 12, 15, 1, 9, 105, 106, 102, 103],
-            [2022, 12, 15, 1, 10, 104, 111, 102, 111],
-            [2022, 12, 15, 1, 11, 109, 110, 93, 95],
-        ];
-        var dataMin = [
-            [2022, 12, 15, 1, 0, 91],
-            [2022, 12, 15, 1, 1, 80],
-            [2022, 12, 15, 1, 2, 89],
-            [2022, 12, 15, 1, 3, 90],
-            [2022, 12, 15, 1, 4, 94],
-            [2022, 12, 15, 1, 5, 101],
-            [2022, 12, 15, 1, 6, 97],
-            [2022, 12, 15, 1, 7, 101],
-            [2022, 12, 15, 1, 8, 98],
-            [2022, 12, 15, 1, 9, 105],
-            [2022, 12, 15, 1, 10, 104],
-            [2022, 12, 15, 1, 11, 109],
+            [2022, 12, 29, 0, 5, 119, 145, 118, 119, 125],
+            [2022, 12, 29, 0, 10, 119, 136, 125, 129, 127],
+            [2022, 12, 29, 0, 15, 129, 137, 132, 136, 133],
+            [2022, 12, 29, 0, 20, 136, 141, 101, 108, 121],
+            [2022, 12, 29, 0, 25, 108, 133, 102, 121, 116],
+            [2022, 12, 29, 0, 30, 121, 126, 102, 109, 114],
+            [2022, 12, 29, 0, 35, 109, 144, 100, 136, 122],
+            [2022, 12, 29, 0, 40, 136, 111, 100, 100, 111],
+            [2022, 12, 29, 0, 45, 100, 145, 116, 129, 122],
+            [2022, 12, 29, 0, 50, 129, 137, 119, 123, 127],
+            [2022, 12, 29, 0, 55, 123, 149, 116, 132, 130],
+            [2022, 12, 29, 1, 0, 132, 119, 100, 101, 113],
+            [2022, 12, 29, 1, 5, 101, 138, 117, 118, 118],
+            [2022, 12, 29, 1, 10, 118, 136, 118, 134, 126],
+            [2022, 12, 29, 1, 15, 134, 148, 103, 144, 132],
+            [2022, 12, 29, 1, 20, 144, 120, 112, 117, 123],
+            [2022, 12, 29, 1, 25, 117, 147, 108, 143, 128],
+            [2022, 12, 29, 1, 30, 143, 145, 101, 105, 123],
+            [2022, 12, 29, 1, 35, 105, 147, 103, 119, 118],
+            [2022, 12, 29, 1, 40, 119, 145, 138, 140, 135],
+            [2022, 12, 29, 1, 45, 140, 149, 124, 131, 136],
+            [2022, 12, 29, 1, 50, 131, 140, 103, 119, 123],
+            [2022, 12, 29, 1, 55, 119, 139, 104, 138, 125],
+            [2022, 12, 29, 2, 0, 138, 149, 143, 146, 144],
+            [2022, 12, 29, 2, 5, 146, 139, 108, 122, 128],
+            [2022, 12, 29, 2, 10, 122, 144, 121, 136, 130],
+            [2022, 12, 29, 2, 15, 136, 133, 122, 130, 130],
+            [2022, 12, 29, 2, 20, 130, 141, 107, 132, 127],
+            [2022, 12, 29, 2, 25, 132, 150, 101, 128, 127],
+            [2022, 12, 29, 2, 30, 128, 138, 101, 112, 119],
+            [2022, 12, 29, 2, 35, 112, 138, 113, 133, 124],
+            [2022, 12, 29, 2, 40, 133, 149, 124, 130, 134],
+            [2022, 12, 29, 2, 45, 130, 142, 101, 128, 125],
+            [2022, 12, 29, 2, 50, 128, 140, 105, 136, 127],
+            [2022, 12, 29, 2, 55, 136, 136, 111, 118, 125],
+            [2022, 12, 29, 3, 0, 118, 146, 125, 137, 131],
+            [2022, 12, 29, 3, 5, 137, 120, 102, 107, 116],
+            [2022, 12, 29, 3, 10, 107, 143, 101, 121, 118],
+            [2022, 12, 29, 3, 15, 121, 147, 124, 143, 133],
+            [2022, 12, 29, 3, 20, 143, 134, 107, 110, 123],
+            [2022, 12, 29, 3, 25, 110, 145, 121, 144, 130],
+            [2022, 12, 29, 3, 30, 144, 128, 108, 123, 125],
+            [2022, 12, 29, 3, 35, 123, 145, 108, 122, 124],
+            [2022, 12, 29, 3, 40, 122, 131, 101, 123, 119],
+            [2022, 12, 29, 3, 45, 123, 138, 119, 122, 125],
+            [2022, 12, 29, 3, 50, 122, 149, 112, 118, 125],
+            [2022, 12, 29, 3, 55, 118, 124, 100, 103, 111],
+            [2022, 12, 29, 4, 0, 103, 142, 131, 134, 127],
+            [2022, 12, 29, 4, 5, 134, 138, 133, 136, 135],
+            [2022, 12, 29, 4, 10, 136, 132, 113, 129, 127],
+            [2022, 12, 29, 4, 15, 129, 137, 106, 108, 120],
+            [2022, 12, 29, 4, 20, 108, 111, 102, 103, 106],
+            [2022, 12, 29, 4, 25, 103, 136, 114, 118, 117],
+            [2022, 12, 29, 4, 30, 118, 135, 106, 107, 116],
+            [2022, 12, 29, 4, 35, 107, 118, 103, 116, 111],
+            [2022, 12, 29, 4, 40, 116, 150, 131, 133, 132],
+            [2022, 12, 29, 4, 45, 133, 139, 110, 121, 125],
+            [2022, 12, 29, 4, 50, 121, 150, 139, 143, 138],
+            [2022, 12, 29, 4, 55, 143, 131, 123, 131, 132],
+            [2022, 12, 29, 5, 0, 131, 139, 101, 117, 122],
+            [2022, 12, 29, 5, 5, 117, 123, 115, 121, 119],
+            [2022, 12, 29, 5, 10, 121, 123, 103, 106, 113],
+            [2022, 12, 29, 5, 15, 106, 145, 117, 141, 127],
+            [2022, 12, 29, 5, 20, 141, 149, 130, 149, 142],
+            [2022, 12, 29, 5, 25, 149, 136, 102, 121, 127],
+            [2022, 12, 29, 5, 30, 121, 146, 107, 139, 128],
+            [2022, 12, 29, 5, 35, 139, 141, 113, 121, 128],
+            [2022, 12, 29, 5, 40, 121, 112, 110, 110, 113],
+            [2022, 12, 29, 5, 45, 110, 148, 105, 140, 125],
+            [2022, 12, 29, 5, 50, 140, 143, 116, 120, 129],
+            [2022, 12, 29, 5, 55, 120, 150, 104, 119, 123],
+            [2022, 12, 29, 6, 0, 119, 149, 104, 138, 127],
+            [2022, 12, 29, 6, 5, 138, 136, 116, 128, 129],
+            [2022, 12, 29, 6, 10, 128, 142, 118, 138, 131],
+            [2022, 12, 29, 6, 15, 138, 146, 132, 140, 139],
+            [2022, 12, 29, 6, 20, 140, 132, 120, 127, 129],
+            [2022, 12, 29, 6, 25, 127, 146, 108, 136, 129],
+            [2022, 12, 29, 6, 30, 136, 148, 112, 131, 131],
+            [2022, 12, 29, 6, 35, 131, 133, 113, 132, 127],
+            [2022, 12, 29, 6, 40, 132, 150, 142, 144, 142],
+            [2022, 12, 29, 6, 45, 144, 145, 106, 132, 131],
+            [2022, 12, 29, 6, 50, 132, 145, 103, 129, 127],
+            [2022, 12, 29, 6, 55, 129, 142, 109, 122, 125],
+            [2022, 12, 29, 7, 0, 122, 134, 116, 122, 123],
+            [2022, 12, 29, 7, 5, 122, 117, 113, 117, 117],
+            [2022, 12, 29, 7, 10, 117, 135, 118, 132, 125],
+            [2022, 12, 29, 7, 15, 132, 124, 103, 115, 118],
+            [2022, 12, 29, 7, 20, 115, 135, 122, 127, 124],
+            [2022, 12, 29, 7, 25, 127, 148, 111, 142, 132],
+            [2022, 12, 29, 7, 30, 142, 132, 106, 131, 127],
+            [2022, 12, 29, 7, 35, 131, 133, 110, 115, 122],
+            [2022, 12, 29, 7, 40, 115, 112, 101, 108, 109],
+            [2022, 12, 29, 7, 45, 108, 121, 100, 113, 110],
+            [2022, 12, 29, 7, 50, 113, 129, 100, 109, 112],
+            [2022, 12, 29, 7, 55, 109, 136, 102, 113, 115],
+            [2022, 12, 29, 8, 0, 113, 125, 107, 110, 113],
+            [2022, 12, 29, 8, 5, 110, 136, 125, 130, 125],
+            [2022, 12, 29, 8, 10, 130, 139, 100, 136, 126],
+            [2022, 12, 29, 8, 15, 136, 133, 106, 114, 122],
+            [2022, 12, 29, 8, 20, 114, 149, 103, 135, 125],
+            [2022, 12, 29, 8, 25, 135, 149, 114, 115, 128],
+            [2022, 12, 29, 8, 30, 115, 146, 103, 122, 121],
+            [2022, 12, 29, 8, 35, 122, 147, 107, 107, 120],
+            [2022, 12, 29, 8, 40, 107, 137, 126, 135, 126],
+            [2022, 12, 29, 8, 45, 135, 148, 109, 140, 133],
+            [2022, 12, 29, 8, 50, 140, 113, 106, 109, 117],
+            [2022, 12, 29, 8, 55, 109, 150, 122, 146, 131],
+            [2022, 12, 29, 9, 0, 146, 140, 104, 121, 127],
+            [2022, 12, 29, 9, 5, 121, 129, 107, 122, 119],
+            [2022, 12, 29, 9, 10, 122, 139, 113, 117, 122],
+            [2022, 12, 29, 9, 15, 117, 135, 100, 133, 121],
+            [2022, 12, 29, 9, 20, 133, 150, 103, 119, 126],
+            [2022, 12, 29, 9, 25, 119, 144, 111, 140, 128],
+            [2022, 12, 29, 9, 30, 140, 148, 108, 144, 135],
+            [2022, 12, 29, 9, 35, 144, 145, 113, 138, 135],
+            [2022, 12, 29, 9, 40, 138, 144, 130, 136, 137],
+            [2022, 12, 29, 9, 45, 136, 132, 102, 127, 124],
+            [2022, 12, 29, 9, 50, 127, 141, 104, 109, 120],
+            [2022, 12, 29, 9, 55, 109, 145, 103, 114, 117],
+            [2022, 12, 29, 10, 0, 114, 143, 117, 141, 128],
+            [2022, 12, 29, 10, 5, 141, 140, 118, 129, 132],
+            [2022, 12, 29, 10, 10, 129, 144, 114, 139, 131],
+            [2022, 12, 29, 10, 15, 139, 129, 112, 114, 123],
+            [2022, 12, 29, 10, 20, 114, 122, 102, 103, 110],
+            [2022, 12, 29, 10, 25, 103, 139, 113, 136, 122],
+            [2022, 12, 29, 10, 30, 136, 148, 124, 135, 135],
+            [2022, 12, 29, 10, 35, 135, 117, 107, 108, 116],
+            [2022, 12, 29, 10, 40, 108, 136, 129, 131, 126],
+            [2022, 12, 29, 10, 45, 131, 144, 106, 134, 128],
+            [2022, 12, 29, 10, 50, 134, 142, 102, 113, 122],
+            [2022, 12, 29, 10, 55, 113, 143, 110, 123, 122],
+            [2022, 12, 29, 11, 0, 123, 140, 119, 124, 126],
+            [2022, 12, 29, 11, 5, 124, 129, 128, 129, 127],
+            [2022, 12, 29, 11, 10, 129, 138, 101, 128, 124],
+            [2022, 12, 29, 11, 15, 128, 137, 117, 130, 128],
+            [2022, 12, 29, 11, 20, 130, 136, 113, 122, 125],
+            [2022, 12, 29, 11, 25, 122, 135, 101, 134, 123],
+            [2022, 12, 29, 11, 30, 134, 134, 116, 127, 127],
+            [2022, 12, 29, 11, 35, 127, 140, 109, 139, 128],
+            [2022, 12, 29, 11, 40, 139, 137, 114, 120, 127],
+            [2022, 12, 29, 11, 45, 120, 122, 112, 120, 118],
+            [2022, 12, 29, 11, 50, 120, 128, 102, 104, 113],
+            [2022, 12, 29, 11, 55, 104, 148, 142, 143, 134],
+            [2022, 12, 29, 12, 0, 143, 131, 114, 123, 127],
+            [2022, 12, 29, 12, 5, 123, 131, 119, 120, 123],
+            [2022, 12, 29, 12, 10, 120, 128, 101, 106, 113],
+            [2022, 12, 29, 12, 15, 106, 124, 104, 124, 114],
+            [2022, 12, 29, 12, 20, 124, 140, 104, 128, 124],
+            [2022, 12, 29, 12, 25, 128, 128, 116, 121, 123],
+            [2022, 12, 29, 12, 30, 121, 133, 112, 131, 124],
+            [2022, 12, 29, 12, 35, 131, 129, 101, 105, 116],
+            [2022, 12, 29, 12, 40, 105, 128, 125, 127, 121],
+            [2022, 12, 29, 12, 45, 127, 135, 107, 131, 125],
+            [2022, 12, 29, 12, 50, 131, 106, 101, 105, 110],
+            [2022, 12, 29, 12, 55, 105, 142, 112, 115, 118],
+            [2022, 12, 29, 13, 0, 115, 149, 137, 147, 137],
+            [2022, 12, 29, 13, 5, 147, 127, 102, 103, 119],
+            [2022, 12, 29, 13, 10, 103, 141, 119, 132, 123],
+            [2022, 12, 29, 13, 15, 132, 138, 109, 136, 128],
+            [2022, 12, 29, 13, 20, 136, 138, 107, 130, 127],
+            [2022, 12, 29, 13, 25, 130, 144, 110, 132, 129],
+            [2022, 12, 29, 13, 30, 132, 139, 100, 103, 118],
+            [2022, 12, 29, 13, 35, 103, 133, 106, 122, 116],
+            [2022, 12, 29, 13, 40, 122, 136, 107, 116, 120],
+            [2022, 12, 29, 13, 45, 116, 148, 130, 146, 135],
+            [2022, 12, 29, 13, 50, 146, 148, 103, 137, 133],
+            [2022, 12, 29, 13, 55, 137, 139, 103, 118, 124],
+            [2022, 12, 29, 14, 0, 118, 150, 100, 113, 120],
+            [2022, 12, 29, 14, 5, 113, 148, 108, 114, 120],
+            [2022, 12, 29, 14, 10, 114, 112, 103, 107, 109],
+            [2022, 12, 29, 14, 15, 107, 133, 104, 111, 113],
+            [2022, 12, 29, 14, 20, 111, 145, 118, 137, 127],
+            [2022, 12, 29, 14, 25, 137, 137, 125, 129, 132],
+            [2022, 12, 29, 14, 30, 129, 147, 102, 108, 121],
+            [2022, 12, 29, 14, 35, 108, 124, 113, 120, 116],
+            [2022, 12, 29, 14, 40, 120, 138, 131, 137, 131],
+            [2022, 12, 29, 14, 45, 137, 143, 105, 129, 128],
+            [2022, 12, 29, 14, 50, 129, 144, 112, 123, 127],
+            [2022, 12, 29, 14, 55, 123, 150, 123, 131, 131],
+            [2022, 12, 29, 15, 0, 131, 133, 117, 125, 126],
+            [2022, 12, 29, 15, 5, 125, 140, 118, 137, 130],
+            [2022, 12, 29, 15, 10, 137, 144, 118, 143, 135],
+            [2022, 12, 29, 15, 15, 143, 113, 101, 106, 115],
+            [2022, 12, 29, 15, 20, 106, 150, 105, 109, 117],
+            [2022, 12, 29, 15, 25, 109, 127, 107, 108, 112],
+            [2022, 12, 29, 15, 30, 108, 145, 139, 142, 133],
+            [2022, 12, 29, 15, 35, 142, 140, 102, 103, 121],
+            [2022, 12, 29, 15, 40, 103, 141, 115, 123, 120],
+            [2022, 12, 29, 15, 45, 123, 147, 109, 120, 124],
+            [2022, 12, 29, 15, 50, 120, 148, 103, 123, 123],
+            [2022, 12, 29, 15, 55, 123, 139, 125, 133, 130],
+            [2022, 12, 29, 16, 0, 133, 145, 140, 143, 140],
+            [2022, 12, 29, 16, 5, 143, 143, 114, 136, 134],
+            [2022, 12, 29, 16, 10, 136, 115, 107, 113, 117],
+            [2022, 12, 29, 16, 15, 113, 142, 116, 129, 125],
+            [2022, 12, 29, 16, 20, 129, 147, 112, 129, 129],
+            [2022, 12, 29, 16, 25, 129, 132, 123, 127, 127],
+            [2022, 12, 29, 16, 30, 127, 149, 100, 135, 127],
+            [2022, 12, 29, 16, 35, 135, 145, 141, 143, 141],
+            [2022, 12, 29, 16, 40, 143, 146, 103, 116, 127]
         ];
         var dataMinSet = [
             [],
@@ -301,9 +507,13 @@
         const lengthList = [5, 10, 20, 60, 120];
         for(var l = 0; l < 5; l++) {
             var temp = [];
-            for (var i = 0; i < dataMin.length; i++) {
+            for (var i = 0; i < data.length; i++) {
                 if (i >= lengthList[l]) {
-                    var tempArr = [...dataMin[i - 1]]
+                    var tempArr = [...data[i - 1]]
+                    tempArr.pop()
+                    tempArr.pop()
+                    tempArr.pop()
+                    tempArr.pop()
                     tempArr.pop()
                     console.log(temp.reduce((a, b) => a + b) / lengthList[l])
                     tempArr.push(temp.reduce((a, b) => a + b) / lengthList[l])
@@ -311,49 +521,59 @@
                     dataMinSet[l].push(tempArr);
                     temp.shift()
                 }
-                temp.push(dataMin[i][5])
+                temp.push(data[i][9])
             }
-            var tempArr = [...dataMin[dataMin.length - 1]]
+            var tempArr = [...data[data.length - 1]]
+            tempArr.pop()
+            tempArr.pop()
+            tempArr.pop()
+            tempArr.pop()
             tempArr.pop()
             tempArr.push(temp.reduce((a, b) => a + b) / lengthList[l])
             dataMinSet[l].push(tempArr);
         }
+        for(var i = 0; i < 5; i++){
+            while(dataMinSet[i].length > 60){
+                dataMinSet[i].shift()
+            }
+        }
         getDataPointsFromCSV(data)
 
-0        function getDataPointsFromCSV(data) {
-            for (var i = 0; i < data.length; i++) {
-                if (data[i].length > 0) {
-                    if (data[i][5] < data[i][8]) {
+        function getDataPointsFromCSV(data) {
+            for (var i = 60; i >= 1; i--) {
+                l = data.length - i
+                if (data[l].length > 0) {
+                    if (data[l][5] < data[l][8]) {
                         dataPoints_positive.push({
                             x: new Date(
-                                parseInt(data[i][0]),
-                                parseInt(data[i][1] - 1),
-                                parseInt(data[i][2]),
-                                parseInt(data[i][3]),
-                                parseInt(data[i][4])
+                                parseInt(data[l][0]),
+                                parseInt(data[l][1] - 1),
+                                parseInt(data[l][2]),
+                                parseInt(data[l][3]),
+                                parseInt(data[l][4])
                             ),
                             y: [
-                                parseInt(data[i][5]),
-                                parseInt(data[i][6]),
-                                parseInt(data[i][7]),
-                                parseInt(data[i][8])
+                                parseInt(data[l][5]),
+                                parseInt(data[l][6]),
+                                parseInt(data[l][7]),
+                                parseInt(data[l][8])
                             ],
                             showToolTip: 'true'
                         })
                     } else {
                         dataPoints_negative.push({
                             x: new Date(
-                                parseInt(data[i][0]),
-                                parseInt(data[i][1] - 1),
-                                parseInt(data[i][2]),
-                                parseInt(data[i][3]),
-                                parseInt(data[i][4])
+                                parseInt(data[l][0]),
+                                parseInt(data[l][1] - 1),
+                                parseInt(data[l][2]),
+                                parseInt(data[l][3]),
+                                parseInt(data[l][4])
                             ),
                             y: [
-                                parseInt(data[i][5]),
-                                parseInt(data[i][6]),
-                                parseInt(data[i][7]),
-                                parseInt(data[i][8])
+                                parseInt(data[l][5]),
+                                parseInt(data[l][6]),
+                                parseInt(data[l][7]),
+                                parseInt(data[l][8])
                             ],
                             showToolTip: 'true'
                         })
@@ -373,6 +593,58 @@
                     showToolTip: "false"
                 })
             }
+            for (var i = 0; i < dataMinSet[1].length; i++){
+                dataPoints10.push({
+                    x: new Date(
+                        parseInt(dataMinSet[1][i][0]),
+                        parseInt(dataMinSet[1][i][1] - 1),
+                        parseInt(dataMinSet[1][i][2]),
+                        parseInt(dataMinSet[1][i][3]),
+                        parseInt(dataMinSet[1][i][4])
+                    ),
+                    y: parseInt(dataMinSet[1][i][5]),
+                    showToolTip: "false"
+                })
+            }
+            for (var i = 0; i < dataMinSet[2].length; i++){
+                dataPoints20.push({
+                    x: new Date(
+                        parseInt(dataMinSet[2][i][0]),
+                        parseInt(dataMinSet[2][i][1] - 1),
+                        parseInt(dataMinSet[2][i][2]),
+                        parseInt(dataMinSet[2][i][3]),
+                        parseInt(dataMinSet[2][i][4])
+                    ),
+                    y: parseInt(dataMinSet[2][i][5]),
+                    showToolTip: "false"
+                })
+            }
+            for (var i = 0; i < dataMinSet[3].length; i++){
+                dataPoints60.push({
+                    x: new Date(
+                        parseInt(dataMinSet[3][i][0]),
+                        parseInt(dataMinSet[3][i][1] - 1),
+                        parseInt(dataMinSet[3][i][2]),
+                        parseInt(dataMinSet[3][i][3]),
+                        parseInt(dataMinSet[3][i][4])
+                    ),
+                    y: parseInt(dataMinSet[3][i][5]),
+                    showToolTip: "false"
+                })
+            }
+            for (var i = 0; i < dataMinSet[4].length; i++){
+                dataPoints120.push({
+                    x: new Date(
+                        parseInt(dataMinSet[4][i][0]),
+                        parseInt(dataMinSet[4][i][1] - 1),
+                        parseInt(dataMinSet[4][i][2]),
+                        parseInt(dataMinSet[4][i][3]),
+                        parseInt(dataMinSet[4][i][4])
+                    ),
+                    y: parseInt(dataMinSet[4][i][5]),
+                    showToolTip: "false"
+                })
+            }
             chart.render();
         }
 
@@ -382,9 +654,49 @@
     check5.onclick = function (){
         console.log("checked")
         if(check5.checked){
-            console.log(chartData.data[0].visible = true);
+            console.log(chartData.data[2].visible = true);
         }else{
-            console.log(chartData.data[0].visible = false);
+            console.log(chartData.data[2].visible = false);
+        }
+
+        chart.render();
+    }
+    check10.onclick = function (){
+        console.log("checked")
+        if(check10.checked){
+            console.log(chartData.data[3].visible = true);
+        }else{
+            console.log(chartData.data[3].visible = false);
+        }
+
+        chart.render();
+    }
+    check20.onclick = function (){
+        console.log("checked")
+        if(check20.checked){
+            console.log(chartData.data[4].visible = true);
+        }else{
+            console.log(chartData.data[4].visible = false);
+        }
+
+        chart.render();
+    }
+    check60.onclick = function (){
+        console.log("checked")
+        if(check60.checked){
+            console.log(chartData.data[5].visible = true);
+        }else{
+            console.log(chartData.data[5].visible = false);
+        }
+
+        chart.render();
+    }
+    check120.onclick = function (){
+        console.log("checked")
+        if(check120.checked){
+            console.log(chartData.data[6].visible = true);
+        }else{
+            console.log(chartData.data[6].visible = false);
         }
 
         chart.render();
