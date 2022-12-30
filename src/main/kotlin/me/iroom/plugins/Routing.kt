@@ -5,7 +5,9 @@ import io.ktor.server.http.content.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import java.io.File
@@ -37,6 +39,9 @@ data class PricePacket(val startPrice: Int, val endPrice: Int, val maxPrice: Int
 
 // 아마도 프론트엔드가 건드리게 될 부분
 fun Application.configureRouting() {
+    CoroutineScope(Dispatchers.IO).launch{
+
+    }
     routing {
         static("/static") {
             resources("static")
@@ -107,22 +112,6 @@ fun Application.configureRouting() {
                  */
             } catch (e: Exception) {
                 call.respondText(e.message.toString())
-            }
-        }
-        post("/stock") {
-            val data = call.receive<PricePacket>()
-            call.respondText("receive: ${data}\n")
-            call.respond(mapOf("result" to true))
-            val datagramSocket: DatagramSocket = withContext(Dispatchers.IO) {
-                DatagramSocket()
-            }
-            val sendData = ("StockTest : $data").toByteArray()
-            val packet = DatagramPacket(
-                sendData, sendData.size,
-                InetSocketAddress("localhost", 3000)
-            )
-            withContext(Dispatchers.IO) {
-                datagramSocket.send(packet)
             }
         }
     }
