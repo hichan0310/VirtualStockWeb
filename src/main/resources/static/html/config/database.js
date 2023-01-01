@@ -1,7 +1,8 @@
 // config/database.js
 module.exports = {
-    host: 'localhost',
+    host: '192.168.109.182', // ip
+    port: '3306',
     user: 'root',
-    password: 'rlatjgh1!2@',
-    database: 'my_db'
+    password: 'asdf',
+    database: 'pdb'
 };

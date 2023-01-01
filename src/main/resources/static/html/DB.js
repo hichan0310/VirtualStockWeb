@@ -8,18 +8,18 @@ const app = express();
 // configuration =========================
 app.set('port', process.env.PORT || 3000);
 
-app.get('/', (req, res) => {
-    res.send('Root');
-});
+// app.get('/', (req, res) => {
+//     res.send('Root');
+// });
 
-app.get('/users', (req, res) => {
-    connection.query('SELECT * from Users', (error, rows) => {
+app.get('/nowprice', (req, res) => {
+    connection.query('SELECT * from nowprice', (error, rows) => { // nowprice가 table 이름임
         if (error) throw error;
-        console.log('Id: ', rows['0']['id'], "pw: ", rows['0']['password']);
+        console.log(rows['0']['price']); //rows[행 번호][열 이름]
         res.send(rows);
     });
 });
 
-app.listen(app.get('port'), () => {
-    console.log('Express server listening on port ' + app.get('port'));
-});
+// app.listen(app.get('port'), () => {
+//     console.log('Express server listening on port ' + app.get('port'));
+// });
