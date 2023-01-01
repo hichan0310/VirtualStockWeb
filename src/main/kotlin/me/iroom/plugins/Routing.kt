@@ -140,11 +140,11 @@ fun Application.configureRouting() {
                                 withContext(Dispatchers.IO) {
                                     datagramSocket.send(datagram)
                                 }
-                                var sqlQ:String="UPDATE account SET money=money-${data.amount*price} WHERE id is ${data.id}"
+                                var sqlQ:String="UPDATE account SET money=money-${data.amount*price} WHERE id = '${data.id}'"
                                 var pstmt=connection.prepareStatement(sqlQ)
                                 pstmt.executeUpdate()
                                 pstmt.close()
-                                sqlQ = "UPDATE account SET stock=stock+${data.amount} WHERE id is ${data.id}"
+                                sqlQ = "UPDATE account SET stock=stock+${data.amount} WHERE id = '${data.id}'"
                                 pstmt=connection.prepareStatement(sqlQ)
                                 pstmt.executeUpdate()
                                 pstmt.close()
@@ -195,11 +195,11 @@ fun Application.configureRouting() {
                                 withContext(Dispatchers.IO) {
                                     datagramSocket.send(datagram)
                                 }
-                                var sqlQ: String = "UPDATE account SET money=money+${data.amount * price} WHERE id is ${data.id}"
+                                var sqlQ: String = "UPDATE account SET money=money+${data.amount * price} WHERE id = '${data.id}'"
                                 var pstmt = connection.prepareStatement(sqlQ)
                                 pstmt.executeUpdate()
                                 pstmt.close()
-                                sqlQ="UPDATE account SET stock=stock-${data.amount} WHERE id is ${data.id}"
+                                sqlQ="UPDATE account SET stock=stock-${data.amount} WHERE id = '${data.id}'"
                                 pstmt=connection.prepareStatement(sqlQ)
                                 pstmt.executeUpdate()
                             }
@@ -246,19 +246,18 @@ fun Application.configureRouting() {
                 val result = statement.executeQuery("SELECT `id`, `pw`, `ip`, `money` FROM `account`")
                 when (command[0]+command[1]){
                     "creataccount" -> {
-                        if(run{
-                                val tmp=true
-                                while (result.next())
-                                    if(result.getString("id")==command[2]) false
-                                tmp
-                        }) {
+                        var tmp=true
+                        while (result.next())
+                            if(result.getString("id")==command[2]) tmp=false
+                        if(tmp) {
                             val id = command[2]
                             val pw = command[3]
                             val money = command[4]
-                            val sqlQ: String = "INSERT INTO account VALUES (${id}, ${pw}, 'created', ${money}, 0)"
+                            val sqlQ: String = "INSERT INTO `account` VALUES ('${id}', '${pw}', 'created', ${money}, 0)"
                             val pstmt = connection.prepareStatement(sqlQ)
                             pstmt.executeUpdate()
                             pstmt.close()
+                            call.respondText("account created")
                         }
                         else{
                             call.respondText("this id is already used")
@@ -267,25 +266,27 @@ fun Application.configureRouting() {
                     "chargemoney" -> {
                         val id=command[2]
                         val money=command[3]
-                        val sqlQ:String="UPDATE account SET money=money+${money} WHERE id is ${id}"
+                        val sqlQ:String="UPDATE `account` SET money=money+${money} WHERE id = '${id}'"
                         val pstmt=connection.prepareStatement(sqlQ)
                         pstmt.executeUpdate()
                         pstmt.close()
+                        call.respondText("money updated")
                     }
                     "returnmoney" -> {
                         val id=command[2]
                         val money=command[3]
-                        val sqlQ:String="UPDATE account SET money=money-${money} WHERE id is ${id}"
+                        val sqlQ:String="UPDATE `account` SET money=money-${money} WHERE id = '${id}'"
                         val pstmt=connection.prepareStatement(sqlQ)
                         pstmt.executeUpdate()
                         pstmt.close()
+                        call.respondText("money updated")
                     }
                     "printmoney" -> {
                         val id=command[2]
                         var temp=true
                         while (result.next()) {
-                            if(result.getString(2)==id){
-                                call.respondText("password : ${result.getString(2)}")
+                            if(result.getString("id")==id){
+                                call.respondText("password : ${result.getString("money")}")
                                 temp=false
                                 break
                             }
@@ -298,8 +299,8 @@ fun Application.configureRouting() {
                         val id=command[2]
                         var temp=true
                         while (result.next()) {
-                            if(result.getString(1)==id){
-                                call.respondText("password : ${result.getString(4)}")
+                            if(result.getString("id")==id){
+                                call.respondText("password : ${result.getString("pw")}")
                                 temp=false
                                 break
                             }
@@ -315,7 +316,7 @@ fun Application.configureRouting() {
                 connection.close()
                 statement.close()
             } catch (e: Exception) {
-                call.respondText("명령어 리스트 보고 제대로 입력해라\n"+e.message.toString())
+                call.respondText("뭔가 에러 있음\n"+e.message.toString())
             }
         }
         get("/admin"){
@@ -339,7 +340,7 @@ fun Application.configureRouting() {
             while(result.next()){
                 if(result.getString("id")==data.id){
                     if(result.getString("pw")==data.pw){
-                        val sqlQ:String="UPDATE account SET ip = '${this.context.request.local.remoteAddress}' id is '${data.id}'"
+                        val sqlQ:String="UPDATE account SET ip = '${this.context.request.local.remoteAddress}' WHERE id = '${data.id}'"
                         val pstmt=connection.prepareStatement(sqlQ)
                         pstmt.executeUpdate()
                         pstmt.close()
@@ -353,6 +354,18 @@ fun Application.configureRouting() {
             result.close()
             connection.close()
             statement.close()
+        }
+        get("/text"){
+            call.respondText("asdfasdfasdf")
+        }
+        get("/json"){
+            call.respondFile(File("C:\\Users\\maxma\\IdeaProjects\\VirtualStockWeb\\asdf.json"))
+        }
+        post("/text"){
+            call.respondText("asdfasdfasdf")
+        }
+        post("/json"){
+            call.respondFile(File("C:\\Users\\maxma\\IdeaProjects\\VirtualStockWeb\\asdf.json"))
         }
     }
 }
