@@ -1,0 +1,23 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>http test</title>
+    <script src="assets/js/jquery.min.js"></script>
+</head>
+<body>
+<button type="submit" id="button" onclick="send()">전송</button>
+</body>
+
+<script>
+    function send() {
+        fetch("http://192.168.238.182:8080/buy", {
+            method: 'POST',
+            body: JSON.stringify({
+                name: "asdf",
+            }),
+            mode: 'no-cors'
+        })
+        console.log('a')
+    }
+</script>
+</html>
