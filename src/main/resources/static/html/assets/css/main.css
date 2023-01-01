@@ -3831,9 +3831,8 @@ body.is-preload #header.alt .logo {
     background-color: #ffffffdd;
     box-shadow: 0 0 20px 0 #00000011;
     border-radius: 10px;
-    transition: ease 0.3s;
+    transition: ease 0.1s;
     display: none;
-
 }
 
 .stikyMemoData {
