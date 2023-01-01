@@ -102,8 +102,8 @@ fun Application.configureRouting() {
         get("/") {
             call.respondText("/index.html로 이동하세요")
         }
-        get("/index.html") {
-            call.respondFile(File("src/main/resources/static/html/index.html"))
+        get("/main.html") {
+            call.respondFile(File("src/main/resources/static/html/main.html"))
         }
         post("/buy") {
             val dataString = call.receive<String>()
