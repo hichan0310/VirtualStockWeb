@@ -44,4 +44,6 @@ dependencies {
     testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
     implementation "io.ktor:ktor-serialization-kotlinx-json:$ktor_version"
     implementation "io.ktor:ktor-server-content-negotiation:$ktor_version"
+    implementation "io.ktor:ktor-server-sessions:$ktor_version"
+    implementation files("main/resources/mysql-connector-j-8.0.31.jar")
 }

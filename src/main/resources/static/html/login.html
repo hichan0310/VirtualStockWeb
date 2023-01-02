@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <!--
-	Stellar by HTML5 UP
-	html5up.net | @ajlkn
-	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+   Stellar by HTML5 UP
+   html5up.net | @ajlkn
+   Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
 -->
 <html>
 <head>
@@ -68,12 +68,12 @@
                 <dd>031-870-2764</dd>
             </dl>
             <ul class="icons">
-<!--                <li><a href="https://www.instagram.com/hichan0310/" class="icon brands fa-instagram alt"><span-->
-<!--                        class="label">Instagram</span></a></li>-->
+                <!--                <li><a href="https://www.instagram.com/hichan0310/" class="icon brands fa-instagram alt"><span-->
+                <!--                        class="label">Instagram</span></a></li>-->
                 <li><a href="https://github.com/hichan0310" class="icon brands fa-github alt"><span
                         class="label">GitHub</span></a></li>
-<!--                <li><a href="https://www.instagram.com/millio_120/" class="icon brands fa-instagram alt"><span-->
-<!--                        class="label">Instagram</span></a></li>-->
+                <!--                <li><a href="https://www.instagram.com/millio_120/" class="icon brands fa-instagram alt"><span-->
+                <!--                        class="label">Instagram</span></a></li>-->
             </ul>
         </section>
         <!--        <p class="copyright">&copy; Untitled. Design: <a href="https://html5up.net">HTML5 UP</a>.</p>  -->
@@ -85,6 +85,7 @@
 <script>
 
     $("#ID").on("propertychange change keyup paste input", function () {
+        document.getElementById("LABEL").innerText = "";
         if(document.getElementById("ID").value && document.getElementById("pw").value){
             document.getElementById("LOGIN").className = "button large primary"
         }
@@ -93,6 +94,7 @@
         }
     })
     $("#pw").on("propertychange change keyup paste input", function () {
+        document.getElementById("LABEL").innerText = ""
         if(document.getElementById("ID").value && document.getElementById("pw").value){
             document.getElementById("LOGIN").className = "button large primary"
         }
@@ -101,26 +103,36 @@
         }
     })
 
-
-    const url = 'http://192.168.109.182:8080'
+    const url = 'http://192.168.24.182:8080'
 
     document.getElementById("LOGIN").onclick = function () {
 
         console.log(document.getElementById("ID").value, document.getElementById("pw").value)
 
-        document.getElementById("LABEL").innerText = "비밀번호가 틀렸습니다.";
-        fetch(url + "/login", {
+        fetch_await().then(x => {
+            if(x['loginfail']){
+                document.getElementById("LABEL").innerText = "아이디 혹은 비밀번호가 틀렸습니다."
+            }
+            else{
+                location.href = "main"
+            }
+        })
+    }
+
+    async function fetch_await () {
+        const response = await fetch(url + "/login", {
             method: 'POST',
             headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
+                "Content-Type": "application/json",
+                "Accept": "application/json",
             },
             body: JSON.stringify({
                 id: document.getElementById("ID").value,
                 pw: document.getElementById("pw").value
-            }),
-            mode: 'no-cors',
+            })
         });
+
+        return response.json()
     }
 
 </script>
