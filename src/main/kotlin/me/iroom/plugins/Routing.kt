@@ -21,6 +21,14 @@ import java.sql.DriverManager
 import java.sql.ResultSet
 import java.sql.SQLException
 
+fun sendTo3000Port(message: String){
+    val sendData = message.toByteArray()
+    DatagramSocket().send(DatagramPacket(
+        sendData, sendData.size,
+        InetSocketAddress("localhost", 3000)
+    ))
+}
+
 
 @Serializable
 data class AdminPacket(val execute: String) {}
@@ -71,10 +79,10 @@ fun Application.configureRouting() {
         }
     }
     CoroutineScope(Dispatchers.IO).launch{
-        var next=LocalDateTime.now().plusMinutes(10)
+        var next=LocalDateTime.now().plusMinutes(1)
         while (true){
             while(next>LocalDateTime.now()){}
-            next=next.plusMinutes(10)
+            next=next.plusMinutes(1)
 
             val endPrice=price
 
@@ -127,7 +135,6 @@ fun Application.configureRouting() {
                     ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE
                 )
                 val res = statement.executeQuery("SELECT `id`, `pw`, `ip`, `money` FROM `account`")
-
                 while (res.next()) {
                     if (res.getString("id")==data.id) {
                         if (res.getString("ip")==this.context.request.local.remoteAddress) {
@@ -227,15 +234,6 @@ fun Application.configureRouting() {
 
             try {
                 val command: List<String> = data.split(' ')
-
-                /*
-                 * 명령어 목록
-                 * creat account [id] [pw] [money]
-                 * charge money [id] [money]
-                 * return money [id] [money]
-                 * print money [id]
-                 * print password [id]
-                 */
                 val connection = DriverManager.getConnection(
                     "jdbc:mysql://localhost/pdb",
                     "asdf", "asdf"
@@ -323,7 +321,7 @@ fun Application.configureRouting() {
             call.respondText("어드민 페이지를 찾아낸 것은 축하한다. \n근데 왜 내가 어드민 페이지의 프론트엔드를 만들어 놓았을 거라고 생각하지? \n")
         }
         get("/login") {
-            //login.html
+            call.respondFile(File("src/main/resources/static/html/login.html"))
         }
         post("/login"){
             val dataString = call.receive<String>()

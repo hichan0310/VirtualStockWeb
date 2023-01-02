@@ -734,7 +734,7 @@
         }
     })
 
-    const url = 'http://192.168.238.182:8080'
+    const url = 'http://192.168.109.182:8080'
 
     function update_chart_temp(){
         var update_data = [...data[data.length - 45]]
@@ -835,10 +835,8 @@
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
+                    id: "test_id_sell",
                     amount: coin_amount,
-                    uid: 'asdf',
-                    ipAddr: 'asdf',
-                    userAgent: 'asdf',
                 }),
                 mode: 'no-cors',
             })
@@ -866,10 +864,8 @@
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
+                    id: "test_id_sell",
                     amount: coin_amount,
-                    uid: 'asdf',
-                    ipAddr: 'asdf',
-                    userAgent: 'asdf',
                 }),
                 mode: 'no-cors',
             }).then(result => console.log(result))
