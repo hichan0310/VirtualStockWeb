@@ -343,7 +343,7 @@
         document.getElementById("LABEL").innerText = ""
     })
 
-    const url = 'http://192.168.24.182:8080'
+    const url = 'http://192.168.21.20:8080'
 
     function update_chart(update_data) {
         if (data.length > 180) data.shift();
@@ -391,7 +391,7 @@
         chart.render()
     }
 
-    function update_min_chart(){
+    function update_min_chart() {
         for (var i = 0; i < 5; i++) {
             var len = lengthList[i];
 
@@ -443,8 +443,7 @@
     window.onload = async function () {
         await client_information_initialize();
         // console.log(data);
-        await console.log(481, data.length);
-        await getDataPointsFromCSV(data);
+
     }
 
     async function onload_post() {
@@ -455,31 +454,40 @@
     }
 
     async function client_information_initialize() {
-         onload_post().then(res => {
+        for (var i of [0, 1]) {
+            if (i == 0) {
+                console.log(111)
+                onload_post().then(res => {
 
-            coin_value = res['stock']
-            money_value = res['money']
-            benefit_value = res['suic']
-            id = res['id']
-            exchange_rate = res['now']
+                    coin_value = res['stock']
+                    money_value = res['money']
+                    benefit_value = res['suic']
+                    id = res['id']
+                    exchange_rate = res['now']
 
-            document.getElementById("coin_value").innerText = coin_value
-            document.getElementById("money_value").innerText = money_value
-            document.getElementById("benefit_value").innerText = benefit_value
-            document.getElementById("ID").innerText = id
-            document.getElementById("exchange_rate").innerText = exchange_rate
+                    document.getElementById("coin_value").innerText = coin_value
+                    document.getElementById("money_value").innerText = money_value
+                    document.getElementById("benefit_value").innerText = benefit_value
+                    document.getElementById("ID").innerText = id
+                    document.getElementById("exchange_rate").innerText = exchange_rate
 
-            const datas = res['pricedb'].split('/')
-            for (var i in datas) {
-                const temp_arr = datas[i].split(',')
-                var update_arr = []
-                for(var k in temp_arr){
-                    update_arr.push(parseInt(temp_arr[k]))
-                }
-                update_chart(temp_arr)
+                    const datas = res['pricedb'].split('/')
+                    for (var i in datas) {
+                        const temp_arr = datas[i].split(',')
+                        var update_arr = []
+                        for (var k in temp_arr) {
+                            update_arr.push(parseInt(temp_arr[k]))
+                        }
+                        update_chart(update_arr)
+                    }
+                    console.log(data.length)
+                })
             }
-            console.log(data.length)
-        })
+            else if (i == 1){
+                console.log(222)
+                setTimeout(() => getDataPointsFromCSV(data), 3000);
+            }
+        }
     }
 
     var dataMinSet = [
@@ -491,15 +499,12 @@
     ];
 
     function getDataPointsFromCSV(data) {
-        var length = 0
         console.log(data, data.length);
-        while (data[length][0]) {
-            length += 1
-        }
+
         while (data.length > 200) {
             data.shift()
         }
-        console.log(length)
+        console.log(data.length)
         for (var l = 0; l < 5; l++) {
             var temp = [];
             for (i = 0; i < data.length; i++) {
@@ -519,7 +524,8 @@
                 // console.log(data[i][9])
             }
             var tempArr = [];
-            for(var k in data[data.length - 1]){
+            console.log(data.length - 1)
+            for (var k in data[data.length - 1]) {
                 tempArr.push(data[data.length - 1][k]);
             }
             tempArr.pop()
@@ -537,7 +543,7 @@
         }
 
         for (var i = 45; i >= 1; i--) {
-            l = data.length - i
+            l = data.length - parseInt(i)
             console.log(l)
             if (data[l].length > 0) {
                 if (data[l][5] < data[l][8]) {

@@ -224,7 +224,7 @@
         location.href = "login"
     })
 
-    const url = 'http://192.168.24.182:8080'
+    const url = 'http://192.168.21.20:8080'
 
     function exchange_rate_update() {
         document.getElementById("exchange_rate").innerText;
@@ -589,6 +589,9 @@
         [2023, 1, 3, 12, 23, 1000, 1000, 1000, 1000, 0],
         [2023, 1, 3, 12, 24, 1000, 1000, 1000, 1000, 0],
     ];
+
+    console.log(typeof data);
+
     const lengthList = [5, 10, 20, 60, 120];
 
     var chartLoad = function () {

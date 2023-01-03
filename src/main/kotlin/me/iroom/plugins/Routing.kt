@@ -26,6 +26,7 @@ import java.time.LocalDateTime
 import java.sql.DriverManager
 import java.sql.ResultSet
 import java.sql.SQLException
+import java.time.LocalDate
 import java.util.logging.Logger
 
 fun sendTo3000Port(message: String) {
@@ -51,7 +52,14 @@ data class SellPacket(val amount: Int) {}
 @Serializable
 data class LoginPacket(val id: String, val pw: String) {}
 
-data class Session(val id: String, val money: Int, val stock: Int, val inputMoney: Int, val outputMoney: Int) {}
+data class Session(
+    val id: String,
+    val money: Int,
+    val stock: Int,
+    val inputMoney: Int,
+    val outputMoney: Int,
+    var available: Long?
+) {}
 
 
 // 아마도 프론트엔드가 건드리게 될 부분
@@ -130,7 +138,7 @@ fun Application.configureRouting() {
             resources("static")
         }
         get("/") {
-            call.respondText("/main으로 이동하세요")
+            call.respondRedirect("/main")
         }
         get("/main") {
             /*
@@ -1432,91 +1440,115 @@ fun Application.configureRouting() {
         post("/buy") {
             val dataString = call.receive<String>()
             val accountData = call.sessions.get<Session>()
+            val data: BuyPacket = Json.decodeFromString(dataString)
+            sendTo3000Port("Buy : $data ($accountData)\ntime : ${System.currentTimeMillis()}")
             if (accountData == null) {
                 call.respondRedirect("/login")
-            }
-            val data: BuyPacket = Json.decodeFromString(dataString)
-            sendTo3000Port("Buy : $data ($accountData)")
-            try {
-                val connection = DriverManager.getConnection(
-                    "jdbc:mysql://localhost/ilbanbest",
-                    "ilban", "ilbanbest"
-                )
-                if (accountData!!.money >= data.amount * price) {
-                    val message = "buy,${data.amount},${accountData.id}".toByteArray()
-                    val datagram = DatagramPacket(
-                        message, message.size,
-                        InetSocketAddress("localhost", 8888)
-                    )
-                    withContext(Dispatchers.IO) {
-                        datagramSocket.send(datagram)
+            } else {
+                if (accountData.available != null) {
+                    if (accountData.available!! < System.currentTimeMillis()) {
+                        accountData.available = null
                     }
-                    var sqlQ: String =
-                        "UPDATE account SET money=money-${data.amount * price} WHERE id = '${accountData.id}'"
-                    var pstmt = connection.prepareStatement(sqlQ)
-                    pstmt.executeUpdate()
-                    pstmt.close()
-                    sqlQ = "UPDATE account SET stock=stock+${data.amount} WHERE id = '${accountData.id}'"
-                    pstmt = connection.prepareStatement(sqlQ)
-                    pstmt.executeUpdate()
-                    pstmt.close()
-                    call.sessions.set(
-                        accountData.copy(
-                            money = accountData.money - data.amount * price,
-                            stock = accountData.stock + data.amount,
-                            inputMoney = accountData.inputMoney + data.amount * price,
+                }
+                if (accountData.available == null) {
+                    try {
+                        val connection = DriverManager.getConnection(
+                            "jdbc:mysql://localhost/ilbanbest",
+                            "ilban", "ilbanbest"
                         )
-                    )
-                    call.respondText("""{"success":1}""", ContentType.Application.Json)
+                        if (accountData.money >= data.amount * price) {
+                            val message = "buy,${data.amount},${accountData.id}".toByteArray()
+                            val datagram = DatagramPacket(
+                                message, message.size,
+                                InetSocketAddress("localhost", 8888)
+                            )
+                            withContext(Dispatchers.IO) {
+                                datagramSocket.send(datagram)
+                            }
+                            var sqlQ: String =
+                                "UPDATE account SET money=money-${data.amount * price} WHERE id = '${accountData.id}'"
+                            var pstmt = connection.prepareStatement(sqlQ)
+                            pstmt.executeUpdate()
+                            pstmt.close()
+                            sqlQ = "UPDATE account SET stock=stock+${data.amount} WHERE id = '${accountData.id}'"
+                            pstmt = connection.prepareStatement(sqlQ)
+                            pstmt.executeUpdate()
+                            pstmt.close()
+                            call.sessions.set(
+                                accountData.copy(
+                                    money = accountData.money - data.amount * price,
+                                    stock = accountData.stock + data.amount,
+                                    inputMoney = accountData.inputMoney + data.amount * price,
+                                    available = System.currentTimeMillis() + data.amount*30000
+                                )
+                            )
+                            call.respondText("""{"success":1}""", ContentType.Application.Json)
+                        } else {
+                            call.respondText("""{"success":0}""", ContentType.Application.Json)
+                        }
+                    } catch (e: Exception) {
+                        call.respondText("""{"success":0}""", ContentType.Application.Json)
+                    }
                 } else {
                     call.respondText("""{"success":0}""", ContentType.Application.Json)
                 }
-            } catch (e: Exception) {
-                call.respondText("""{"success":0}""", ContentType.Application.Json)
             }
         }
         post("/sell") {
             val dataString = call.receive<String>()
+            val data: BuyPacket = Json.decodeFromString(dataString)
             val accountData = call.sessions.get<Session>()
+            sendTo3000Port("Sell : $data ($accountData)\ntime : ${System.currentTimeMillis()}")
             if (accountData == null) {
                 call.respondRedirect("/login")
-            }
-            val data: SellPacket = Json.decodeFromString(dataString)
-            sendTo3000Port("Sell : $data ($accountData)")
-            try {
-                val connection = DriverManager.getConnection(
-                    "jdbc:mysql://localhost/ilbanbest",
-                    "ilban", "ilbanbest"
-                )
-                if (accountData!!.stock >= data.amount) {
-                    val message = "sell,${data.amount},${accountData.id}".toByteArray()
-                    val datagram = DatagramPacket(
-                        message, message.size,
-                        InetSocketAddress("localhost", 8888)
-                    )
-                    withContext(Dispatchers.IO) {
-                        datagramSocket.send(datagram)
+            } else {
+                if (accountData.available != null) {
+                    if (accountData.available!! < System.currentTimeMillis()) {
+                        accountData.available = null
                     }
-                    var sqlQ: String =
-                        "UPDATE account SET money=money+${data.amount * price} WHERE id = '${accountData.id}'"
-                    var pstmt = connection.prepareStatement(sqlQ)
-                    pstmt.executeUpdate()
-                    pstmt.close()
-                    sqlQ = "UPDATE account SET stock=stock-${data.amount} WHERE id = '${accountData.id}'"
-                    pstmt = connection.prepareStatement(sqlQ)
-                    pstmt.executeUpdate()
-                    call.sessions.set(
-                        accountData.copy(
-                            money = accountData.money + data.amount * price,
-                            stock = accountData.stock - data.amount,
-                            outputMoney = accountData.outputMoney + data.amount * price
-                        )
-                    )
-                    call.respondText("""{"success":1}""", ContentType.Application.Json)
                 }
-                call.respondText("""{"success":0}""", ContentType.Application.Json)
-            } catch (e: Exception) {
-                call.respondText("""{"success":0}""", ContentType.Application.Json)
+                if (accountData!!.available == null) {
+                    try {
+                        val connection = DriverManager.getConnection(
+                            "jdbc:mysql://localhost/ilbanbest",
+                            "ilban", "ilbanbest"
+                        )
+                        if (accountData.stock >= data.amount) {
+                            val message = "sell,${data.amount},${accountData.id}".toByteArray()
+                            val datagram = DatagramPacket(
+                                message, message.size,
+                                InetSocketAddress("localhost", 8888)
+                            )
+                            withContext(Dispatchers.IO) {
+                                datagramSocket.send(datagram)
+                            }
+                            var sqlQ: String =
+                                "UPDATE account SET money=money+${data.amount * price} WHERE id = '${accountData.id}'"
+                            var pstmt = connection.prepareStatement(sqlQ)
+                            pstmt.executeUpdate()
+                            pstmt.close()
+                            sqlQ = "UPDATE account SET stock=stock-${data.amount} WHERE id = '${accountData.id}'"
+                            pstmt = connection.prepareStatement(sqlQ)
+                            pstmt.executeUpdate()
+                            pstmt.close()
+                            call.sessions.set(
+                                accountData.copy(
+                                    money = accountData.money + data.amount * price,
+                                    stock = accountData.stock - data.amount,
+                                    outputMoney = accountData.outputMoney + data.amount * price,
+                                    available = System.currentTimeMillis()+data.amount*30000
+                                )
+                            )
+                            call.respondText("""{"success":1}""", ContentType.Application.Json)
+                        } else {
+                            call.respondText("""{"success":0}""", ContentType.Application.Json)
+                        }
+                    } catch (e: Exception) {
+                        call.respondText("""{"success":0}""", ContentType.Application.Json)
+                    }
+                } else {
+                    call.respondText("""{"success":0}""", ContentType.Application.Json)
+                }
             }
         }
         post("/admin") {
@@ -1621,7 +1653,6 @@ fun Application.configureRouting() {
             }
         }
         get("/admin") {
-            sendTo3000Port("asdfasdfasdfasdf")
             call.respondText("어드민 페이지를 찾아낸 것은 축하한다. \n근데 왜 내가 어드민 페이지의 프론트엔드를 만들어 놓았을 거라고 생각하지? \n")
         }
         get("/login") {
@@ -1647,20 +1678,23 @@ fun Application.configureRouting() {
                                 result.getInt("money"),
                                 result.getInt("stock"),
                                 result.getInt("input"),
-                                result.getInt("output")
+                                result.getInt("output"),
+                                null        //쿠키 날리면 뚫리는 취약점
                             )
                         )
+                        call.respondText("""{"login":1}""", ContentType.Application.Json)
                     } else {
                         call.respondText("""{"loginfail":1}""", ContentType.Application.Json)
                     }
                 }
             }
-            call.respondText("""{"login":0}""", ContentType.Application.Json)
+            call.respondText("""{"loginfail":1}""", ContentType.Application.Json)
             result.close()
             connection.close()
             statement.close()
         }
         get("/now") {
+            val accountData = call.sessions.get<Session>()
             val connection = DriverManager.getConnection(
                 "jdbc:mysql://localhost/ilbanbest",
                 "ilban", "ilbanbest"
@@ -1668,7 +1702,15 @@ fun Application.configureRouting() {
             val statement = connection.createStatement(
                 ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE
             )
-            var result = statement.executeQuery("SELECT * FROM `pricedb`")
+            var result = statement.executeQuery("SELECT `id`, `pw`, `money`, `stock`, `input`, `output` FROM `account`")
+            while (result.next()) {
+                if (result.getString("id") == accountData!!.id) {
+                    call.sessions.set(
+                        accountData.copy(money = result.getInt("money"))
+                    )
+                }
+            }
+            result = statement.executeQuery("SELECT * FROM `pricedb`")
             result.next()
             var text =
                 "${result.getInt(1)},${result.getInt(2)},${result.getInt(3)},${result.getInt(4)},${result.getInt(5)},${
@@ -1695,6 +1737,7 @@ fun Application.configureRouting() {
             }
         }
         get("/onload") {
+            var accountData = call.sessions.get<Session>()
             val connection = DriverManager.getConnection(
                 "jdbc:mysql://localhost/ilbanbest",
                 "ilban", "ilbanbest"
@@ -1702,7 +1745,25 @@ fun Application.configureRouting() {
             val statement = connection.createStatement(
                 ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE
             )
-            val result = statement.executeQuery("SELECT * FROM `pricedb`")
+            var result = statement.executeQuery("SELECT `id`, `pw`, `money`, `stock`, `input`, `output` FROM `account`")
+            if (accountData != null) {
+                while (result.next()) {
+                    if (result.getString("id") == accountData!!.id) {
+                        call.sessions.set(
+                            accountData.copy(money = result.getInt("money"))
+                        )
+                        accountData = Session(
+                            accountData.id,
+                            accountData.money,
+                            accountData.stock,
+                            accountData.inputMoney,
+                            accountData.outputMoney,
+                            accountData.available
+                        )
+                    }
+                }
+            }
+            result = statement.executeQuery("SELECT * FROM `pricedb`")
             result.next()
             var text =
                 "${result.getInt(1)},${result.getInt(2)},${result.getInt(3)},${result.getInt(4)},${result.getInt(5)},${
@@ -1716,7 +1777,6 @@ fun Application.configureRouting() {
                 },${result.getInt(6)},${result.getInt(7)},${result.getInt(8)},${result.getInt(9)},${result.getInt(10)}"
             }
 
-            val accountData = call.sessions.get<Session>()
             if (accountData == null) {
                 call.respondText(
                     """

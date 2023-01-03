@@ -2,7 +2,7 @@ import socket
 
 localIP = "localhost"
 localPort = 3000
-bufferSize = 100
+bufferSize = 10000
 
 # 데이터그램 소켓을 생성
 UDPServerSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
