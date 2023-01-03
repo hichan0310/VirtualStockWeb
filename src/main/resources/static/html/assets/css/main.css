@@ -3854,3 +3854,65 @@ body.is-preload #header.alt .logo {
         text-align: left;
     }
 }
+
+@media (max-width: 800px) {
+    h1 {
+        font-size: 2em !important;
+    }
+
+    h2 {
+        font-size: 1.7em !important;
+    }
+}
+
+@media (max-width: 650px) {
+    h1 {
+        font-size: 1.65em !important;
+    }
+
+    h2 {
+        font-size: 1.5em !important;
+    }
+}
+
+@media (max-width: 550px) {
+    h1 {
+        font-size: 1.4em !important;
+    }
+
+    h2 {
+        font-size: 1.25em !important;
+    }
+}
+
+@media (max-width: 400px) {
+    h1 {
+        font-size: 1.25em !important;
+    }
+
+    h2 {
+        font-size: 1em !important;
+    }
+}
+
+.nowPrice {
+    width: fit-content;
+    display: block;
+    float: left;
+    position: relative;
+    font-size: 22.5px;
+    top: auto;
+    text-align: start
+}
+
+@media (max-width: 500px) {
+    .nowPrice {
+        width: fit-content;
+        display: block;
+        float: left;
+        position: relative;
+        font-size: 18px;
+        top: auto;
+        text-align: start
+    }
+}

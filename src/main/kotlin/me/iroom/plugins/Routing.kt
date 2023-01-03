@@ -51,7 +51,7 @@ data class SellPacket(val amount: Int) {}
 @Serializable
 data class LoginPacket(val id: String, val pw: String) {}
 
-data class Session(val id: String, val money:Int, val stock:Int) {}
+data class Session(val id: String, val money: Int, val stock: Int, val inputMoney: Int, val outputMoney: Int) {}
 
 
 // 아마도 프론트엔드가 건드리게 될 부분
@@ -133,15 +133,15 @@ fun Application.configureRouting() {
             call.respondText("/main으로 이동하세요")
         }
         get("/main") {
+            /*
             val accountData = call.sessions.get<Session>()
-            var textttt:String=""
-            if (accountData == null) {
-                textttt="""
+            var textttt: String = ""
+            if (accountData == null) textttt = """
                     <!DOCTYPE html>
 <!--
-	Stellar by HTML5 UP
-	html5up.net | @ajlkn
-	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+   Stellar by HTML5 UP
+   html5up.net | @ajlkn
+   Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
 -->
 <html>
 <head>
@@ -162,6 +162,11 @@ fun Application.configureRouting() {
 <div id="wrapper">
 
     <!-- Header -->
+    <header class="alt">
+        <div style="width: max-content; float: right; margin: auto; padding: 15px">
+            <a id="LOGIN" class="button" style="align-content: end">LOGIN</a>
+        </div>
+    </header>
     <header id="header" class="alt">
         <span class="logo"><img src="/static/html/images/coin.png" alt=""/></span>
         <h1>삼선전자</h1>
@@ -180,7 +185,6 @@ fun Application.configureRouting() {
 
     <!-- Main -->
     <div id="main">
-
         <!-- Introduction -->
         <section id="ghost_house" class="main">
             <header class="major special">
@@ -189,7 +193,8 @@ fun Application.configureRouting() {
             <div class="spotlight">
                 <div class="content">
                     <header class="major">
-                        <h1 style="text-align: start">"글쎄, 여기서 여학생이 죽었다는데...<br> 아무도 이유를 모른다는 거야..."</h1>
+                        <h1 style="align-content: center; text-align: left; margin-right: 0; line-height: 10pt">"글쎄, 여기서 여학생이 죽었다는데...</h1>
+                        <h1 style="align-content: center; text-align: right; margin-right: 0;">아무도 이유를 모른다는 거야..."</h1>
                         <h2 style="text-align: start">당신은 죽지 않고 탈출할 수 있을까...?!</h2>
                     </header>
                     <div class="spotlight">
@@ -216,6 +221,15 @@ fun Application.configureRouting() {
             <header class="major">
                 <h2>나히다 코인</h2>
             </header>
+            <div class="stikyMemo" id="stikyMemo">
+                <div class="stikyMemoData" style="text-align: center; font-weight: bold"></div>
+                <div class="stikyMemoData">보유 코인량 : <span id="coin_value">1000</span> <span class="stikyUnit">N</span>
+                </div>
+                <div class="stikyMemoData">보유 화폐량 : <span id="money_value">0</span> <span class="stikyUnit">W</span>
+                </div>
+                <div class="stikyMemoData">수익률 : <span id="benefit_value">0</span> <span class="stikyUnit">%</span>
+                </div>
+            </div>
 
             <div class="col-12" style="position: relative; display: flex; flex-direction: row-reverse;">
 
@@ -264,15 +278,20 @@ fun Application.configureRouting() {
                         <script type="text/javascript" src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>
                     </div>
 
-                    <div style="display: block">
-                        <span style="width: fit-content; display: block; float: left; position: relative; font-size: 22.5px; top:auto; text-align: start">&nbsp;&nbsp;현재 시세 : 1N = </span>
-                        <span style="width: fit-content; display: block; float: left; position: relative; font-size: 22.5px; top:auto;" id="exchange_rate"></span>
-                        <span style="width: fit-content; display: block; float: left; position: relative; font-size: 22.5px; top:auto;">W</span>
-                        <a id="TEST" class="button" onclick="exchange_rate_update()">새로고침</a>
+                    <div class="col-9" style="display: block">
+                        <span class="nowPrice">&nbsp;&nbsp;현재 시세 : 1N = </span>
+                        <span id="exchange_rate" class="nowPrice">1000</span>
+                        <span class="nowPrice">W &nbsp;&nbsp;&nbsp;&nbsp;</span>
+                    </div>
+                    <div class="col-3" style="align-content: end; flex: none">
+                        <div style="width: inherit; display: flex; justify-content: flex-end">
+                            <button id="NOW" onclick="exchange_rate_update()">new</button>
+                        </div>
                     </div>
 
                 </div>
             </div>
+
         </section>
 
         <section id="lotto" class="main">
@@ -312,7 +331,6 @@ fun Application.configureRouting() {
             <ul class="actions">
                 <li><a href="https://namu.wiki/w/%EA%B2%BD%EA%B8%B0%EB%B6%81%EA%B3%BC%ED%95%99%EA%B3%A0%EB%93%B1%ED%95%99%EA%B5%90" class="button">경기북과학고등학교</a></li>
                 <li><a href="https://gbs.wiki/w/GBSWiki:%EB%8C%80%EB%AC%B8" class="button">북곽위키</a></li>
-                <!--                <li><a href="generic.html" class="button">북곽위키</a></li>-->
             </ul>
         </section>
         <section>
@@ -323,22 +341,29 @@ fun Application.configureRouting() {
                 <dd>031-870-2764</dd>
             </dl>
             <ul class="icons">
-                <!--                <li><a href="https://www.instagram.com/hichan0310/" class="icon brands fa-instagram alt"><span-->
-                <!--                        class="label">Instagram</span></a></li>-->
+
                 <li><a href="https://github.com/hichan0310" class="icon brands fa-github alt"><span
                         class="label">GitHub</span></a></li>
-                <!--                <li><a href="https://www.instagram.com/millio_120/" class="icon brands fa-instagram alt"><span-->
-                <!--                        class="label">Instagram</span></a></li>-->
+
             </ul>
         </section>
-        <!--        <p class="copyright">&copy; Untitled. Design: <a href="https://html5up.net">HTML5 UP</a>.</p>  -->
     </footer>
 
 </div>
 <!--graph-->
 <script>
+    ${'$'}("#LOGIN").click(function () {
+        location.href = "login"
+    })
+
+    const url = 'http://192.168.24.182:8080'
+
     function exchange_rate_update() {
-        document.getElementById("exchange_rate").innerText = nowprice_update();
+        document.getElementById("exchange_rate").innerText;
+
+        fetch(url + "/now", {
+            method: 'GET',
+        }).then(x => console.log(x.json()))
     }
 
     var check5 = document.getElementById('demo-5');
@@ -455,14 +480,12 @@ fun Application.configureRouting() {
 
     var data = [
                 """.trimIndent()
-            }
-            else {
-                textttt = """
-                <!DOCTYPE html>
+            else textttt = """
+                    <!DOCTYPE html>
 <!--
-	Stellar by HTML5 UP
-	html5up.net | @ajlkn
-	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+   Stellar by HTML5 UP
+   html5up.net | @ajlkn
+   Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
 -->
 <html>
 <head>
@@ -510,7 +533,8 @@ fun Application.configureRouting() {
             <div class="spotlight">
                 <div class="content">
                     <header class="major">
-                        <h1 style="text-align: start">"글쎄, 여기서 여학생이 죽었다는데...<br> 아무도 이유를 모른다는 거야..."</h1>
+                        <h1 style="align-content: center; text-align: left; margin-right: 0; line-height: 10pt">"글쎄, 여기서 여학생이 죽었다는데...</h1>
+                        <h1 style="align-content: center; text-align: right; margin-right: 0;">아무도 이유를 모른다는 거야..."</h1>
                         <h2 style="text-align: start">당신은 죽지 않고 탈출할 수 있을까...?!</h2>
                     </header>
                     <div class="spotlight">
@@ -538,24 +562,16 @@ fun Application.configureRouting() {
                 <h2>나히다 코인</h2>
             </header>
             <div class="stikyMemo" id="stikyMemo">
-                <div class="stikyMemoData"><span id="id" style="font-weight: bold; text-align: center">${accountData!!.id}</span> <span class="stikyUnit"></span>
+                <div class="stikyMemoData" style="text-align: center; font-weight: bold">[ID]</div>
+                <div class="stikyMemoData">보유 코인량 : <span id="coin_value">1000</span> <span class="stikyUnit">N</span>
                 </div>
-                <div class="stikyMemoData">보유 코인량 : <span id="coin_value">${accountData!!.money}</span> <span class="stikyUnit">N</span>
+                <div class="stikyMemoData">보유 화폐량 : <span id="money_value">0</span> <span class="stikyUnit">W</span>
                 </div>
-                <div class="stikyMemoData">보유 화폐량 : <span id="money_value">${accountData!!.stock}</span> <span class="stikyUnit">W</span>
+                <div class="stikyMemoData">수익률 : <span id="benefit_value">0</span> <span class="stikyUnit">%</span>
                 </div>
             </div>
 
             <div class="col-12" style="position: relative; display: flex; flex-direction: row-reverse;">
-
-                <!--                <select name="demo-category" id="demo-category">-->
-                <!--                    <option value="">- time - &nbsp;</option>-->
-                <!--                    <option value="5">5 min &nbsp; </option>-->
-                <!--                    <option value="10">10 min &nbsp; </option>-->
-                <!--                    <option value="20">20 min &nbsp; </option>-->
-                <!--                    <option value="60">60 min &nbsp; </option>-->
-                <!--                    <option value="120">120 min &nbsp; </option>-->
-                <!--                </select>-->
 
                 <div class="col-6 col-12-small">
                     <input type="checkbox" id="demo-120" name="demo-120">
@@ -586,18 +602,20 @@ fun Application.configureRouting() {
 
             <div class="box alt">
                 <div class="row gtr-uniform">
-                    <!--                    <div class="col-12"><span class="image fit"><img src="image/graph.png" alt=""/></span></div>-->
+                    <!--                    <div class="col-12"><span class="image fit"><img src="/static/html/image/graph.png" alt=""/></span></div>-->
                     <div class="col-12">
                         <div id="chartContainer" style="height: 370px; width: 100%;"></div>
                         <script type="text/javascript" src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
                         <script type="text/javascript" src="https://canvasjs.com/assets/script/jquery-1.11.1.min.js"></script>
                     </div>
 
-                    <div style="display: block">
-                        <span style="width: fit-content; display: block; float: left; position: relative; font-size: 22.5px; top:auto; text-align: start">&nbsp;&nbsp;현재 시세 : 1N = </span>
-                        <span style="width: fit-content; display: block; float: left; position: relative; font-size: 22.5px; top:auto;" id="exchange_rate"></span>
-                        <span style="width: fit-content; display: block; float: left; position: relative; font-size: 22.5px; top:auto;">W</span>
-                        <a id="TEST" class="button" onclick="exchange_rate_update()" style="text-align: center">새로고침</a>
+                    <div class="col-9" style="display: block">
+                        <span class="nowPrice">현재 시세 : 1N = </span>
+                        <span id="exchange_rate" class="nowPrice">1000</span>
+                        <span class="nowPrice">W &nbsp;&nbsp;&nbsp;&nbsp;</span>
+                    </div>
+                    <div class="col-4">
+                        <a id="NOW" class="button" style="align-content: end;">시세 업데이트</a>
                     </div>
 
                     <div class="col-10"><input type="number" id="coin_amount" value=""
@@ -608,6 +626,8 @@ fun Application.configureRouting() {
                     </div>
                 </div>
             </div>
+
+            <label id="LABEL" style="color: maroon; text-align: center; width: auto"></label>
 
             <footer class="major">
                 <ul class="actions special">
@@ -654,7 +674,6 @@ fun Application.configureRouting() {
             <ul class="actions">
                 <li><a href="https://namu.wiki/w/%EA%B2%BD%EA%B8%B0%EB%B6%81%EA%B3%BC%ED%95%99%EA%B3%A0%EB%93%B1%ED%95%99%EA%B5%90" class="button">경기북과학고등학교</a></li>
                 <li><a href="https://gbs.wiki/w/GBSWiki:%EB%8C%80%EB%AC%B8" class="button">북곽위키</a></li>
-                <!--                <li><a href="generic.html" class="button">북곽위키</a></li>-->
             </ul>
         </section>
         <section>
@@ -665,12 +684,12 @@ fun Application.configureRouting() {
                 <dd>031-870-2764</dd>
             </dl>
             <ul class="icons">
-<!--                <li><a href="https://www.instagram.com/hichan0310/" class="icon brands fa-instagram alt"><span-->
-<!--                        class="label">Instagram</span></a></li>-->
+                <!--                <li><a href="https://www.instagram.com/hichan0310/" class="icon brands fa-instagram alt"><span-->
+                <!--                        class="label">Instagram</span></a></li>-->
                 <li><a href="https://github.com/hichan0310" class="icon brands fa-github alt"><span
                         class="label">GitHub</span></a></li>
-<!--                <li><a href="https://www.instagram.com/millio_120/" class="icon brands fa-instagram alt"><span-->
-<!--                        class="label">Instagram</span></a></li>-->
+                <!--                <li><a href="https://www.instagram.com/millio_120/" class="icon brands fa-instagram alt"><span-->
+                <!--                        class="label">Instagram</span></a></li>-->
             </ul>
         </section>
         <!--        <p class="copyright">&copy; Untitled. Design: <a href="https://html5up.net">HTML5 UP</a>.</p>  -->
@@ -679,9 +698,25 @@ fun Application.configureRouting() {
 </div>
 <!--graph-->
 <script>
-    function exchange_rate_update() {
-        document.getElementById("exchange_rate").innerText = nowprice_update();
-    }
+    var coin_value
+    var money_value
+    var exchange_rate
+    var id
+
+    ${'$'}("#coin_amount").on("propertychange change keyup paste input", function () {
+        document.getElementById("LABEL").innerText = ""
+    })
+
+    const url = 'http://192.168.24.182:8080'
+
+    ${'$'}("#NOW").click(async function() {
+        var res = fetch(url + "/now", {
+            method: 'GET',
+        }).then(await (await (x => x.json())))
+        
+        exchange_rate = res['price']
+        document.getElementById("exchange_rate").innerText = exchange_rate
+    })
 
     var check5 = document.getElementById('demo-5');
     var check10 = document.getElementById('demo-10');
@@ -796,9 +831,9 @@ fun Application.configureRouting() {
     var chart = new CanvasJS.Chart("chartContainer", chartData);
 
     var data = [
-            """.trimIndent()
-            }
+                """.trimIndent()
             File("src/main/resources/static/html/main.html").bufferedWriter().use { it.write(textttt) }
+
 
             var str: String = ""
             val connection = DriverManager.getConnection(
@@ -809,7 +844,7 @@ fun Application.configureRouting() {
                 ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE
             )
             val result = statement.executeQuery("SELECT * FROM `pricedb`")
-            while (result.next()) {
+            while (result.next())
                 str += "[${result.getInt(1)}, ${result.getInt(2)}, ${result.getInt(3)}, ${result.getInt(4)}, ${
                     result.getInt(
                         5
@@ -819,378 +854,580 @@ fun Application.configureRouting() {
                         10
                     )
                 }],\n"
-            }
             Files.write(
                 Paths.get("src/main/resources/static/html/main.html"),
                 str.toByteArray(),
                 StandardOpenOption.APPEND
             )
-            textttt = """
-                ];
-                    const lengthList = [5, 10, 20, 60, 120];
 
-                    var chartLoad = function () {
-                        getDataPointsFromCSV(data)
-                    }
-
-                    var dataMinSet = [
-                        [],
-                        [],
-                        [],
-                        [],
-                        [],
+            if (accountData == null) textttt = """
                     ];
+                        const lengthList = [5, 10, 20, 60, 120];
 
-                    function getDataPointsFromCSV(data) {
-                        while(data.length > 200){
-                            data.shift()
+                        var chartLoad = function () {
+                            getDataPointsFromCSV(data)
                         }
 
-                        for (var l = 0; l < 5; l++) {
-                            var temp = [];
-                            for (var i = 0; i < data.length; i++) {
-                                if (i >= lengthList[l]) {
-                                    var tempArr = [...data[i - 1]]
-                                    tempArr.pop()
-                                    tempArr.pop()
-                                    tempArr.pop()
-                                    tempArr.pop()
-                                    tempArr.pop()
-                                    tempArr.push(temp.reduce((a, b) => a + b) / lengthList[l])
-                                    dataMinSet[l].push(tempArr);
-                                    temp.shift()
-                                }
-                                temp.push(data[i][9])
+                        var dataMinSet = [
+                            [],
+                            [],
+                            [],
+                            [],
+                            [],
+                        ];
+
+                        function getDataPointsFromCSV(data) {
+                            while (data.length > 200) {
+                                data.shift()
                             }
-                            var tempArr = [...data[data.length - 1]]
-                            tempArr.pop()
-                            tempArr.pop()
-                            tempArr.pop()
-                            tempArr.pop()
-                            tempArr.pop()
-                            tempArr.push(temp.reduce((a, b) => a + b) / lengthList[l])
-                            dataMinSet[l].push(tempArr);
-                        }
-                        for (var i = 0; i < 5; i++) {
-                            while (dataMinSet[i].length > 45) {
-                                dataMinSet[i].shift()
-                            }
-                        }
 
-                        for (var i = 45; i >= 1; i--) {
-                            l = data.length - i
-                            if (data[l].length > 0) {
-                                if (data[l][5] < data[l][8]) {
-                                    dataPoints_positive.push({
-                                        x: new Date(
-                                            parseInt(data[l][0]),
-                                            parseInt(data[l][1] - 1),
-                                            parseInt(data[l][2]),
-                                            parseInt(data[l][3]),
-                                            parseInt(data[l][4])
-                                        ),
-                                        y: [
-                                            parseInt(data[l][5]),
-                                            parseInt(data[l][6]),
-                                            parseInt(data[l][7]),
-                                            parseInt(data[l][8])
-                                        ],
-                                        showToolTip: 'true'
-                                    })
+                            for (var l = 0; l < 5; l++) {
+                                var temp = [];
+                                for (var i = 0; i < data.length; i++) {
+                                    if (i >= lengthList[l]) {
+                                        var tempArr = [...data[i - 1]]
+                                        tempArr.pop()
+                                        tempArr.pop()
+                                        tempArr.pop()
+                                        tempArr.pop()
+                                        tempArr.pop()
+                                        tempArr.push(temp.reduce((a, b) => a + b) / lengthList[l])
+                                        dataMinSet[l].push(tempArr);
+                                        temp.shift()
+                                    }
+                                    temp.push(data[i][9])
                                 }
-                                else {
-                                    dataPoints_negative.push({
-                                        x: new Date(
-                                            parseInt(data[l][0]),
-                                            parseInt(data[l][1] - 1),
-                                            parseInt(data[l][2]),
-                                            parseInt(data[l][3]),
-                                            parseInt(data[l][4])
-                                        ),
-                                        y: [
-                                            parseInt(data[l][5]),
-                                            parseInt(data[l][6]),
-                                            parseInt(data[l][7]),
-                                            parseInt(data[l][8])
-                                        ],
-                                        showToolTip: 'true'
-                                    })
+                                var tempArr = [...data[data.length - 1]]
+                                tempArr.pop()
+                                tempArr.pop()
+                                tempArr.pop()
+                                tempArr.pop()
+                                tempArr.pop()
+                                tempArr.push(temp.reduce((a, b) => a + b) / lengthList[l])
+                                dataMinSet[l].push(tempArr);
+                            }
+                            for (var i = 0; i < 5; i++) {
+                                while (dataMinSet[i].length > 45) {
+                                    dataMinSet[i].shift()
                                 }
                             }
+
+                            for (var i = 45; i >= 1; i--) {
+                                l = data.length - i
+                                if (data[l].length > 0) {
+                                    if (data[l][5] < data[l][8]) {
+                                        dataPoints_positive.push({
+                                            x: new Date(
+                                                parseInt(data[l][0]),
+                                                parseInt(data[l][1] - 1),
+                                                parseInt(data[l][2]),
+                                                parseInt(data[l][3]),
+                                                parseInt(data[l][4])
+                                            ),
+                                            y: [
+                                                parseInt(data[l][5]),
+                                                parseInt(data[l][6]),
+                                                parseInt(data[l][7]),
+                                                parseInt(data[l][8])
+                                            ],
+                                            showToolTip: 'true'
+                                        })
+                                    } else {
+                                        dataPoints_negative.push({
+                                            x: new Date(
+                                                parseInt(data[l][0]),
+                                                parseInt(data[l][1] - 1),
+                                                parseInt(data[l][2]),
+                                                parseInt(data[l][3]),
+                                                parseInt(data[l][4])
+                                            ),
+                                            y: [
+                                                parseInt(data[l][5]),
+                                                parseInt(data[l][6]),
+                                                parseInt(data[l][7]),
+                                                parseInt(data[l][8])
+                                            ],
+                                            showToolTip: 'true'
+                                        })
+                                    }
+                                }
+                            }
+
+                            for (var i = 0; i < dataMinSet[0].length; i++) {
+                                dataPoints5.push({
+                                    x: new Date(
+                                        parseInt(dataMinSet[0][i][0]),
+                                        parseInt(dataMinSet[0][i][1] - 1),
+                                        parseInt(dataMinSet[0][i][2]),
+                                        parseInt(dataMinSet[0][i][3]),
+                                        parseInt(dataMinSet[0][i][4])
+                                    ),
+                                    y: parseInt(dataMinSet[0][i][5]),
+                                    showToolTip: "false"
+                                })
+                            }
+                            for (var i = 0; i < dataMinSet[1].length; i++) {
+                                dataPoints10.push({
+                                    x: new Date(
+                                        parseInt(dataMinSet[1][i][0]),
+                                        parseInt(dataMinSet[1][i][1] - 1),
+                                        parseInt(dataMinSet[1][i][2]),
+                                        parseInt(dataMinSet[1][i][3]),
+                                        parseInt(dataMinSet[1][i][4])
+                                    ),
+                                    y: parseInt(dataMinSet[1][i][5]),
+                                    showToolTip: "false"
+                                })
+                            }
+                            for (var i = 0; i < dataMinSet[2].length; i++) {
+                                dataPoints20.push({
+                                    x: new Date(
+                                        parseInt(dataMinSet[2][i][0]),
+                                        parseInt(dataMinSet[2][i][1] - 1),
+                                        parseInt(dataMinSet[2][i][2]),
+                                        parseInt(dataMinSet[2][i][3]),
+                                        parseInt(dataMinSet[2][i][4])
+                                    ),
+                                    y: parseInt(dataMinSet[2][i][5]),
+                                    showToolTip: "false"
+                                })
+                            }
+                            for (var i = 0; i < dataMinSet[3].length; i++) {
+                                dataPoints60.push({
+                                    x: new Date(
+                                        parseInt(dataMinSet[3][i][0]),
+                                        parseInt(dataMinSet[3][i][1] - 1),
+                                        parseInt(dataMinSet[3][i][2]),
+                                        parseInt(dataMinSet[3][i][3]),
+                                        parseInt(dataMinSet[3][i][4])
+                                    ),
+                                    y: parseInt(dataMinSet[3][i][5]),
+                                    showToolTip: "false"
+                                })
+                            }
+                            for (var i = 0; i < dataMinSet[4].length; i++) {
+                                dataPoints120.push({
+                                    x: new Date(
+                                        parseInt(dataMinSet[4][i][0]),
+                                        parseInt(dataMinSet[4][i][1] - 1),
+                                        parseInt(dataMinSet[4][i][2]),
+                                        parseInt(dataMinSet[4][i][3]),
+                                        parseInt(dataMinSet[4][i][4])
+                                    ),
+                                    y: parseInt(dataMinSet[4][i][5]),
+                                    showToolTip: "false"
+                                })
+                            }
+                            chart.render();
                         }
 
-                        for (var i = 0; i < dataMinSet[0].length; i++) {
-                            dataPoints5.push({
-                                x: new Date(
-                                    parseInt(dataMinSet[0][i][0]),
-                                    parseInt(dataMinSet[0][i][1] - 1),
-                                    parseInt(dataMinSet[0][i][2]),
-                                    parseInt(dataMinSet[0][i][3]),
-                                    parseInt(dataMinSet[0][i][4])
-                                ),
-                                y: parseInt(dataMinSet[0][i][5]),
-                                showToolTip: "false"
-                            })
+                        window.onload = chartLoad();
+
+                        check5.onclick = function () {
+                            chartData.data[2].visible = !!check5.checked;
+                            chart.render();
                         }
-                        for (var i = 0; i < dataMinSet[1].length; i++) {
-                            dataPoints10.push({
-                                x: new Date(
-                                    parseInt(dataMinSet[1][i][0]),
-                                    parseInt(dataMinSet[1][i][1] - 1),
-                                    parseInt(dataMinSet[1][i][2]),
-                                    parseInt(dataMinSet[1][i][3]),
-                                    parseInt(dataMinSet[1][i][4])
-                                ),
-                                y: parseInt(dataMinSet[1][i][5]),
-                                showToolTip: "false"
-                            })
+                        check10.onclick = function () {
+                            chartData.data[3].visible = !!check10.checked;
+                            chart.render();
                         }
-                        for (var i = 0; i < dataMinSet[2].length; i++) {
-                            dataPoints20.push({
-                                x: new Date(
-                                    parseInt(dataMinSet[2][i][0]),
-                                    parseInt(dataMinSet[2][i][1] - 1),
-                                    parseInt(dataMinSet[2][i][2]),
-                                    parseInt(dataMinSet[2][i][3]),
-                                    parseInt(dataMinSet[2][i][4])
-                                ),
-                                y: parseInt(dataMinSet[2][i][5]),
-                                showToolTip: "false"
-                            })
+                        check20.onclick = function () {
+                            chartData.data[4].visible = !!check20.checked;
+                            chart.render();
                         }
-                        for (var i = 0; i < dataMinSet[3].length; i++) {
-                            dataPoints60.push({
-                                x: new Date(
-                                    parseInt(dataMinSet[3][i][0]),
-                                    parseInt(dataMinSet[3][i][1] - 1),
-                                    parseInt(dataMinSet[3][i][2]),
-                                    parseInt(dataMinSet[3][i][3]),
-                                    parseInt(dataMinSet[3][i][4])
-                                ),
-                                y: parseInt(dataMinSet[3][i][5]),
-                                showToolTip: "false"
-                            })
+                        check60.onclick = function () {
+                            chartData.data[5].visible = !!check60.checked;
+                            chart.render();
                         }
-                        for (var i = 0; i < dataMinSet[4].length; i++) {
-                            dataPoints120.push({
-                                x: new Date(
-                                    parseInt(dataMinSet[4][i][0]),
-                                    parseInt(dataMinSet[4][i][1] - 1),
-                                    parseInt(dataMinSet[4][i][2]),
-                                    parseInt(dataMinSet[4][i][3]),
-                                    parseInt(dataMinSet[4][i][4])
-                                ),
-                                y: parseInt(dataMinSet[4][i][5]),
-                                showToolTip: "false"
-                            })
-                        }
-                        chart.render();
-                    }
-
-                    window.onload = chartLoad();
-
-                    check5.onclick = function () {
-                        chartData.data[2].visible = !!check5.checked;
-                        chart.render();
-                    }
-                    check10.onclick = function () {
-                        chartData.data[3].visible = !!check10.checked;
-                        chart.render();
-                    }
-                    check20.onclick = function () {
-                        chartData.data[4].visible = !!check20.checked;
-                        chart.render();
-                    }
-                    check60.onclick = function () {
-                        chartData.data[5].visible = !!check60.checked;
-                        chart.render();
-                    }
-                    check120.onclick = function () {
-                        chartData.data[6].visible = !!check120.checked;
-                        chart.render();
-                    }
-
-                    document.getElementById("stikyMemo").style.top = document.documentElement.scrollTop;
-                    window.addEventListener('scroll', () => {
-                        if (document.getElementById("lotto").offsetTop > window.scrollY && window.scrollY > document.getElementById("coin").offsetTop - 300) {
-                            document.getElementById("stikyMemo").style.display = "block";
-                            document.getElementById("stikyMemo").style.top = document.documentElement.scrollTop + 150 + 'px';
-                        } else {
-                            document.getElementById("stikyMemo").style.display = "none";
-                        }
-                    });
-
-                    ${'$'}("#coin_amount").on("propertychange change keyup paste input", function () {
-                        if (document.getElementById("coin_amount").value > 0) {
-                            document.getElementById("SELL").className = "button large primary"
-                            document.getElementById("BUY").className = "button large primary"
-                        } else {
-                            document.getElementById("SELL").className = "button large primary disabled"
-                            document.getElementById("BUY").className = "button large primary disabled"
-                        }
-                    })
-
-                    const url = 'http://192.168.109.182:8080'
-
-                    function update_chart_temp(){
-                        var update_data = [...data[data.length - 45]]
-
-                        update_data[3] = data[data.length - 1][3];
-                        update_data[4] = data[data.length - 1][4] + 5;
-
-                        update_chart(update_data);
-                    }
-
-                    function update_chart(update_data) {
-                        data.shift();
-                        data.push(update_data);
-
-                        if (update_data[5] < update_data[8]) {
-                            chart.options.data[1].dataPoints.shift()
-                            chart.options.data[1].dataPoints.push({
-                                x: new Date(
-                                    parseInt(update_data[0]),
-                                    parseInt(update_data[1] - 1),
-                                    parseInt(update_data[2]),
-                                    parseInt(update_data[3]),
-                                    parseInt(update_data[4])
-                                ),
-                                y: [
-                                    parseInt(update_data[5]),
-                                    parseInt(update_data[6]),
-                                    parseInt(update_data[7]),
-                                    parseInt(update_data[8])
-                                ],
-                                showToolTip: 'true'
-                            })
-                        }
-                        else {
-                            chart.options.data[0].dataPoints.shift()
-                            chart.options.data[0].dataPoints.push({
-                                x: new Date(
-                                    parseInt(update_data[0]),
-                                    parseInt(update_data[1] - 1),
-                                    parseInt(update_data[2]),
-                                    parseInt(update_data[3]),
-                                    parseInt(update_data[4])
-                                ),
-                                y: [
-                                    parseInt(update_data[5]),
-                                    parseInt(update_data[6]),
-                                    parseInt(update_data[7]),
-                                    parseInt(update_data[8])
-                                ],
-                                showToolTip: 'true'
-                            })
+                        check120.onclick = function () {
+                            chartData.data[6].visible = !!check120.checked;
+                            chart.render();
                         }
 
-                        for(var i = 0; i < 5; i++){
-                            var len = lengthList[i];
+                        function update_chart(update_data) {
+                            data.shift();
+                            data.push(update_data);
 
-                            var temp_arr = [...data[data.length - 1]];
-                            temp_arr.pop();
-                            temp_arr.pop();
-                            temp_arr.pop();
-                            temp_arr.pop();
-                            temp_arr.pop();
-                            temp_arr.push((dataMinSet[i][dataMinSet[i].length - 1][5] * len - data[data.length - 1 - len][9] + data[data.length - 1][9]) / len);
-                            chart.options.data[i + 2].dataPoints.shift()
-                            chart.options.data[i + 2].dataPoints.push({
-                                x: new Date(
-                                    temp_arr[0],
-                                    temp_arr[1] - 1,
-                                    temp_arr[2],
-                                    temp_arr[3],
-                                    temp_arr[4],
-                                ),
-                                y: temp_arr[5],
-                                showToolTip: 'false'
-                            })
+                            if (update_data[5] < update_data[8]) {
+                                chart.options.data[1].dataPoints.shift()
+                                chart.options.data[1].dataPoints.push({
+                                    x: new Date(
+                                        parseInt(update_data[0]),
+                                        parseInt(update_data[1] - 1),
+                                        parseInt(update_data[2]),
+                                        parseInt(update_data[3]),
+                                        parseInt(update_data[4])
+                                    ),
+                                    y: [
+                                        parseInt(update_data[5]),
+                                        parseInt(update_data[6]),
+                                        parseInt(update_data[7]),
+                                        parseInt(update_data[8])
+                                    ],
+                                    showToolTip: 'true'
+                                })
+                            } else {
+                                chart.options.data[0].dataPoints.shift()
+                                chart.options.data[0].dataPoints.push({
+                                    x: new Date(
+                                        parseInt(update_data[0]),
+                                        parseInt(update_data[1] - 1),
+                                        parseInt(update_data[2]),
+                                        parseInt(update_data[3]),
+                                        parseInt(update_data[4])
+                                    ),
+                                    y: [
+                                        parseInt(update_data[5]),
+                                        parseInt(update_data[6]),
+                                        parseInt(update_data[7]),
+                                        parseInt(update_data[8])
+                                    ],
+                                    showToolTip: 'true'
+                                })
+                            }
+
+                            for (var i = 0; i < 5; i++) {
+                                var len = lengthList[i];
+
+                                var temp_arr = [...data[data.length - 1]];
+                                temp_arr.pop();
+                                temp_arr.pop();
+                                temp_arr.pop();
+                                temp_arr.pop();
+                                temp_arr.pop();
+                                temp_arr.push((dataMinSet[i][dataMinSet[i].length - 1][5] * len - data[data.length - 1 - len][9] + data[data.length - 1][9]) / len);
+                                chart.options.data[i + 2].dataPoints.shift()
+                                chart.options.data[i + 2].dataPoints.push({
+                                    x: new Date(
+                                        temp_arr[0],
+                                        temp_arr[1] - 1,
+                                        temp_arr[2],
+                                        temp_arr[3],
+                                        temp_arr[4],
+                                    ),
+                                    y: temp_arr[5],
+                                    showToolTip: 'false'
+                                })
+                            }
+
+                            chart.render();
                         }
 
-                        chart.render();
-                    }
 
-                    document.getElementById("SELL").onclick = function () {
-                        var coin_amount = Number(document.getElementById('coin_amount').value);
-                        var coin_value = Number(document.getElementById('coin_value').innerText);
-                        var money_value = Number(document.getElementById('money_value').innerText);
-                        var exchange_rate = Number(document.getElementById("exchange_rate").innerText);
+                    </script>
+                    <!-- Scripts -->
+                    <script src="/static/html/assets/js/jquery.min.js"></script>
+                    <script src="/static/html/assets/js/jquery.scrollex.min.js"></script>
+                    <script src="/static/html/assets/js/jquery.scrolly.min.js"></script>
+                    <script src="/static/html/assets/js/browser.min.js"></script>
+                    <script src="/static/html/assets/js/breakpoints.min.js"></script>
+                    <script src="/static/html/assets/js/util.js"></script>
+                    <script src="/static/html/assets/js/main.js"></script>
 
-                        if (coin_amount > coin_value) {
-                            console.log("!")
-                            // 경고: 입력창 테두리
-                        } else {
-                            document.getElementById('coin_value').innerText = coin_value - coin_amount;
-                            document.getElementById("money_value").innerText = money_value + coin_amount * exchange_rate;
+                    </body>
+                    </html>
+                """.trimIndent()
+            else textttt = """
+                    ];
+                        const lengthList = [5, 10, 20, 60, 120];
 
-                            fetch(url + "/sell", {
-                                method: 'POST',
-                                headers: {
-                                    'Accept': 'application/json',
-                                    'Content-Type': 'application/json',
-                                },
-                                body: JSON.stringify({
-                                    id: "test_id_sell",
-                                    amount: coin_amount,
-                                }),
-                                mode: 'no-cors',
-                            })
+                        function client_information_initialize(){
+                            var res = fetch(url + "/onload", {
+                                method: "GET",
+                            }).then(x => x.json())
+                            console.log(res)
 
-                            console.log('sell')
+                            coin_value = res['stock']
+                            money_value = res['money']
+                            exchange_rate = res['suic']
+                            id = res['id']
+
+                            document.getElementById("coin_value").innerText = coin_value
+                            document.getElementById("money_value").innerText = money_value
+                            document.getElementById("exchange_rate").innerText = exchange_rate
+                            document.getElementById("ID").innerText = id
                         }
-                    }
-                    document.getElementById("BUY").onclick = function () {
-                        var coin_amount = Number(document.getElementById('coin_amount').value);
-                        var coin_value = Number(document.getElementById('coin_value').innerText);
-                        var money_value = Number(document.getElementById('money_value').innerText);
-                        var exchange_rate = Number(document.getElementById("exchange_rate").innerText);
 
-                        if (coin_amount * exchange_rate > money_value) {
-                            console.log("!")
-                            // 경고
-                        } else {
-                            document.getElementById('money_value').innerText = money_value - coin_amount * exchange_rate;
-                            document.getElementById("coin_value").innerText = coin_value + coin_amount;
+                        var window_onload = function () {
+                            client_information_initialize()
 
-                            fetch(url + "/buy", {
-                                method: 'POST',
-                                headers: {
-                                    'Accept': 'application/json',
-                                    'Content-Type': 'application/json',
-                                },
-                                body: JSON.stringify({
-                                    id: "test_id_sell",
-                                    amount: coin_amount,
-                                }),
-                                mode: 'no-cors',
-                            }).then(result => console.log(result))
-
-                            console.log('buy')
+                            getDataPointsFromCSV(data)
                         }
-                    }
+
+                        var dataMinSet = [
+                            [],
+                            [],
+                            [],
+                            [],
+                            [],
+                        ];
+
+                        function getDataPointsFromCSV(data) {
+                            while (data.length > 200) {
+                                data.shift()
+                            }
+
+                            for (var l = 0; l < 5; l++) {
+                                var temp = [];
+                                for (var i = 0; i < data.length; i++) {
+                                    if (i >= lengthList[l]) {
+                                        var tempArr = [...data[i - 1]]
+                                        tempArr.pop()
+                                        tempArr.pop()
+                                        tempArr.pop()
+                                        tempArr.pop()
+                                        tempArr.pop()
+                                        tempArr.push(temp.reduce((a, b) => a + b) / lengthList[l])
+                                        dataMinSet[l].push(tempArr);
+                                        temp.shift()
+                                    }
+                                    temp.push(data[i][9])
+                                }
+                                var tempArr = [...data[data.length - 1]]
+                                tempArr.pop()
+                                tempArr.pop()
+                                tempArr.pop()
+                                tempArr.pop()
+                                tempArr.pop()
+                                tempArr.push(temp.reduce((a, b) => a + b) / lengthList[l])
+                                dataMinSet[l].push(tempArr);
+                            }
+                            for (var i = 0; i < 5; i++) {
+                                while (dataMinSet[i].length > 45) {
+                                    dataMinSet[i].shift()
+                                }
+                            }
+
+                            for (var i = 45; i >= 1; i--) {
+                                l = data.length - i
+                                if (data[l].length > 0) {
+                                    if (data[l][5] < data[l][8]) {
+                                        dataPoints_positive.push({
+                                            x: new Date(
+                                                parseInt(data[l][0]),
+                                                parseInt(data[l][1] - 1),
+                                                parseInt(data[l][2]),
+                                                parseInt(data[l][3]),
+                                                parseInt(data[l][4])
+                                            ),
+                                            y: [
+                                                parseInt(data[l][5]),
+                                                parseInt(data[l][6]),
+                                                parseInt(data[l][7]),
+                                                parseInt(data[l][8])
+                                            ],
+                                            showToolTip: 'true'
+                                        })
+                                    } else {
+                                        dataPoints_negative.push({
+                                            x: new Date(
+                                                parseInt(data[l][0]),
+                                                parseInt(data[l][1] - 1),
+                                                parseInt(data[l][2]),
+                                                parseInt(data[l][3]),
+                                                parseInt(data[l][4])
+                                            ),
+                                            y: [
+                                                parseInt(data[l][5]),
+                                                parseInt(data[l][6]),
+                                                parseInt(data[l][7]),
+                                                parseInt(data[l][8])
+                                            ],
+                                            showToolTip: 'true'
+                                        })
+                                    }
+                                }
+                            }
+
+                            for (var i = 0; i < dataMinSet[0].length; i++) {
+                                dataPoints5.push({
+                                    x: new Date(
+                                        parseInt(dataMinSet[0][i][0]),
+                                        parseInt(dataMinSet[0][i][1] - 1),
+                                        parseInt(dataMinSet[0][i][2]),
+                                        parseInt(dataMinSet[0][i][3]),
+                                        parseInt(dataMinSet[0][i][4])
+                                    ),
+                                    y: parseInt(dataMinSet[0][i][5]),
+                                    showToolTip: "false"
+                                })
+                            }
+                            for (var i = 0; i < dataMinSet[1].length; i++) {
+                                dataPoints10.push({
+                                    x: new Date(
+                                        parseInt(dataMinSet[1][i][0]),
+                                        parseInt(dataMinSet[1][i][1] - 1),
+                                        parseInt(dataMinSet[1][i][2]),
+                                        parseInt(dataMinSet[1][i][3]),
+                                        parseInt(dataMinSet[1][i][4])
+                                    ),
+                                    y: parseInt(dataMinSet[1][i][5]),
+                                    showToolTip: "false"
+                                })
+                            }
+                            for (var i = 0; i < dataMinSet[2].length; i++) {
+                                dataPoints20.push({
+                                    x: new Date(
+                                        parseInt(dataMinSet[2][i][0]),
+                                        parseInt(dataMinSet[2][i][1] - 1),
+                                        parseInt(dataMinSet[2][i][2]),
+                                        parseInt(dataMinSet[2][i][3]),
+                                        parseInt(dataMinSet[2][i][4])
+                                    ),
+                                    y: parseInt(dataMinSet[2][i][5]),
+                                    showToolTip: "false"
+                                })
+                            }
+                            for (var i = 0; i < dataMinSet[3].length; i++) {
+                                dataPoints60.push({
+                                    x: new Date(
+                                        parseInt(dataMinSet[3][i][0]),
+                                        parseInt(dataMinSet[3][i][1] - 1),
+                                        parseInt(dataMinSet[3][i][2]),
+                                        parseInt(dataMinSet[3][i][3]),
+                                        parseInt(dataMinSet[3][i][4])
+                                    ),
+                                    y: parseInt(dataMinSet[3][i][5]),
+                                    showToolTip: "false"
+                                })
+                            }
+                            for (var i = 0; i < dataMinSet[4].length; i++) {
+                                dataPoints120.push({
+                                    x: new Date(
+                                        parseInt(dataMinSet[4][i][0]),
+                                        parseInt(dataMinSet[4][i][1] - 1),
+                                        parseInt(dataMinSet[4][i][2]),
+                                        parseInt(dataMinSet[4][i][3]),
+                                        parseInt(dataMinSet[4][i][4])
+                                    ),
+                                    y: parseInt(dataMinSet[4][i][5]),
+                                    showToolTip: "false"
+                                })
+                            }
+                            chart.render();
+                        }
+
+                        window.onload = window_onload();
+
+                        check5.onclick = function () {
+                            chartData.data[2].visible = !!check5.checked;
+                            chart.render();
+                        }
+                        check10.onclick = function () {
+                            chartData.data[3].visible = !!check10.checked;
+                            chart.render();
+                        }
+                        check20.onclick = function () {
+                            chartData.data[4].visible = !!check20.checked;
+                            chart.render();
+                        }
+                        check60.onclick = function () {
+                            chartData.data[5].visible = !!check60.checked;
+                            chart.render();
+                        }
+                        check120.onclick = function () {
+                            chartData.data[6].visible = !!check120.checked;
+                            chart.render();
+                        }
+
+                        document.getElementById("stikyMemo").style.top = document.documentElement.scrollTop;
+                        window.addEventListener('scroll', () => {
+                            if (document.getElementById("lotto").offsetTop - 300 > window.scrollY && window.scrollY > document.getElementById("coin").offsetTop - 150) {
+                                document.getElementById("stikyMemo").style.display = "block";
+                                document.getElementById("stikyMemo").style.top = document.documentElement.scrollTop + 150 + 'px';
+                            } else {
+                                document.getElementById("stikyMemo").style.display = "none";
+                            }
+                        });
+
+                        ${'$'}("#coin_amount").on("propertychange change keyup paste input", function () {
+                            if (document.getElementById("coin_amount").value > 0) {
+                                document.getElementById("SELL").className = "button large primary"
+                                document.getElementById("BUY").className = "button large primary"
+                            } else {
+                                document.getElementById("SELL").className = "button large primary disabled"
+                                document.getElementById("BUY").className = "button large primary disabled"
+                            }
+                        })
+
+                        document.getElementById("SELL").onclick = function () {
+                            var coin_amount = Number(document.getElementById('coin_amount').value);
+
+                            if (coin_amount > coin_value) {
+                                document.getElementById("LABEL").innerText = "팔 수 없습니다."
+                            } else {
+                                coin_value = coin_value - coin_amount
+                                money_value = money_value + coin_amount * exchange_rate
+
+                                document.getElementById('coin_value').innerText = coin_value
+                                document.getElementById("money_value").innerText = money_value
+
+                                fetch(url + "/sell", {
+                                    method: 'POST',
+                                    headers: {
+                                        'Accept': 'application/json',
+                                        'Content-Type': 'application/json',
+                                    },
+                                    body: JSON.stringify({
+                                        amount: coin_amount,
+                                    }),
+                                })
+
+                                console.log('sell')
+                                client_information_initialize()
+                            }
+                        }
+                        document.getElementById("BUY").onclick = function () {
+                            var coin_amount = Number(document.getElementById('coin_amount').value);
+
+                            if (coin_amount * exchange_rate > money_value) {
+                                document.getElementById("LABEL").innerText = "살 수 없습니다."
+                            } else {
+                                coin_value = coin_value - coin_amount
+                                money_value = money_value + coin_amount * exchange_rate
+
+                                document.getElementById('coin_value').innerText = coin_value
+                                document.getElementById("money_value").innerText = money_value
+
+                                fetch(url + "/buy", {
+                                    method: 'POST',
+                                    headers: {
+                                        'Accept': 'application/json',
+                                        'Content-Type': 'application/json',
+                                    },
+                                    body: JSON.stringify({
+                                        amount: coin_amount,
+                                    }),
+                                }).then(result => console.log(result))
+
+                                console.log('buy')
+                                client_information_initialize()
+                            }
+                        }
 
 
-                </script>
-                <!-- Scripts -->
-                <script src="/static/html/DataBase.js"></script>
-                <script src="/static/html/assets/js/jquery.min.js"></script>
-                <script src="/static/html/assets/js/jquery.scrollex.min.js"></script>
-                <script src="/static/html/assets/js/jquery.scrolly.min.js"></script>
-                <script src="/static/html/assets/js/browser.min.js"></script>
-                <script src="/static/html/assets/js/breakpoints.min.js"></script>
-                <script src="/static/html/assets/js/util.js"></script>
-                <script src="/static/html/assets/js/main.js"></script>
+                    </script>
+                    <!-- Scripts -->
+                    <script src="/static/html/assets/js/jquery.min.js"></script>
+                    <script src="/static/html/assets/js/jquery.scrollex.min.js"></script>
+                    <script src="/static/html/assets/js/jquery.scrolly.min.js"></script>
+                    <script src="/static/html/assets/js/browser.min.js"></script>
+                    <script src="/static/html/assets/js/breakpoints.min.js"></script>
+                    <script src="/static/html/assets/js/util.js"></script>
+                    <script src="/static/html/assets/js/main.js"></script>
 
-                </body>
-                </html>
-            """.trimIndent()
+                    </body>
+                    </html>
+                """.trimIndent()
             Files.write(
                 Paths.get("src/main/resources/static/html/main.html"),
                 textttt.toByteArray(),
                 StandardOpenOption.APPEND
             )
             call.respondFile(File("src/main/resources/static/html/main.html"))
+             */
+            if (call.sessions.get<Session>() == null) call.respondFile(File("src/main/resources/static/html/account_null_main.html"))
+            else call.respondFile(File("src/main/resources/static/html/account_main.html"))
         }
         post("/buy") {
             val dataString = call.receive<String>()
@@ -1199,105 +1436,89 @@ fun Application.configureRouting() {
                 call.respondRedirect("/login")
             }
             val data: BuyPacket = Json.decodeFromString(dataString)
-            val sendData = ("Buy : $data").toByteArray()
-            val packet = DatagramPacket(
-                sendData, sendData.size,
-                InetSocketAddress("localhost", 3000)
-            )
-            withContext(Dispatchers.IO) {
-                datagramSocket.send(packet)
-            }
-
+            sendTo3000Port("Buy : $data ($accountData)")
             try {
                 val connection = DriverManager.getConnection(
                     "jdbc:mysql://localhost/ilbanbest",
                     "ilban", "ilbanbest"
                 )
-                val statement = connection.createStatement(
-                    ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE
-                )
-                val res = statement.executeQuery("SELECT `id`, `pw`, `money`, `stock` FROM `account`")
-                while (res.next()) {
-                    if (res.getString("id") == accountData!!.id) {
-                        if (res.getInt("money") >= data.amount * price) {
-                            val message = "buy,${data.amount},${accountData!!.id}".toByteArray()
-                            val datagram = DatagramPacket(
-                                message, message.size,
-                                InetSocketAddress("localhost", 8888)
-                            )
-                            withContext(Dispatchers.IO) {
-                                datagramSocket.send(datagram)
-                            }
-                            var sqlQ: String =
-                                "UPDATE account SET money=money-${data.amount * price} WHERE id = '${accountData.id}'"
-                            var pstmt = connection.prepareStatement(sqlQ)
-                            pstmt.executeUpdate()
-                            pstmt.close()
-                            sqlQ = "UPDATE account SET stock=stock+${data.amount} WHERE id = '${accountData.id}'"
-                            pstmt = connection.prepareStatement(sqlQ)
-                            pstmt.executeUpdate()
-                            pstmt.close()
-                            call.respondText("""{"success":1}""", ContentType.Application.Json)
-                        } else {
-                            call.respondText("""{"success":0}""", ContentType.Application.Json)
-                        }
+                if (accountData!!.money >= data.amount * price) {
+                    val message = "buy,${data.amount},${accountData.id}".toByteArray()
+                    val datagram = DatagramPacket(
+                        message, message.size,
+                        InetSocketAddress("localhost", 8888)
+                    )
+                    withContext(Dispatchers.IO) {
+                        datagramSocket.send(datagram)
                     }
+                    var sqlQ: String =
+                        "UPDATE account SET money=money-${data.amount * price} WHERE id = '${accountData.id}'"
+                    var pstmt = connection.prepareStatement(sqlQ)
+                    pstmt.executeUpdate()
+                    pstmt.close()
+                    sqlQ = "UPDATE account SET stock=stock+${data.amount} WHERE id = '${accountData.id}'"
+                    pstmt = connection.prepareStatement(sqlQ)
+                    pstmt.executeUpdate()
+                    pstmt.close()
+                    call.sessions.set(
+                        accountData.copy(
+                            money = accountData.money - data.amount * price,
+                            stock = accountData.stock + data.amount,
+                            inputMoney = accountData.inputMoney + data.amount * price,
+                        )
+                    )
+                    call.respondText("""{"success":1}""", ContentType.Application.Json)
+                } else {
+                    call.respondText("""{"success":0}""", ContentType.Application.Json)
                 }
             } catch (e: Exception) {
-                call.respondText("요청이 처리되지 못했습니다. \n$e")
+                call.respondText("""{"success":0}""", ContentType.Application.Json)
             }
         }
-        /*post("/sell") {
+        post("/sell") {
             val dataString = call.receive<String>()
-            val data: SellPacket = Json.decodeFromString(dataString)
-            val sendData = ("Sell : $data").toByteArray()
-            val packet = DatagramPacket(
-                sendData, sendData.size,
-                InetSocketAddress("localhost", 3000)
-            )
-            withContext(Dispatchers.IO) {
-                datagramSocket.send(packet)
+            val accountData = call.sessions.get<Session>()
+            if (accountData == null) {
+                call.respondRedirect("/login")
             }
+            val data: SellPacket = Json.decodeFromString(dataString)
+            sendTo3000Port("Sell : $data ($accountData)")
             try {
                 val connection = DriverManager.getConnection(
                     "jdbc:mysql://localhost/ilbanbest",
                     "ilban", "ilbanbest"
                 )
-                val statement = connection.createStatement(
-                    ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE
-                )
-                val res = statement.executeQuery("SELECT `id`, `pw`, `ip`, `money`, `stock` FROM `account`")
-
-                while (res.next()) {
-                    if (res.getString("id") == data.id) {
-                        if (res.getString("ip") == this.context.request.local.remoteAddress) {
-                            if (res.getInt("stock") >= data.amount) {
-                                val message = "sell,${data.amount},${data.id}".toByteArray()
-                                val datagram = DatagramPacket(
-                                    message, message.size,
-                                    InetSocketAddress("localhost", 8888)
-                                )
-                                withContext(Dispatchers.IO) {
-                                    datagramSocket.send(datagram)
-                                }
-                                var sqlQ: String =
-                                    "UPDATE account SET money=money+${data.amount * price} WHERE id = '${data.id}'"
-                                var pstmt = connection.prepareStatement(sqlQ)
-                                pstmt.executeUpdate()
-                                pstmt.close()
-                                sqlQ = "UPDATE account SET stock=stock-${data.amount} WHERE id = '${data.id}'"
-                                pstmt = connection.prepareStatement(sqlQ)
-                                pstmt.executeUpdate()
-                            }
-                        } else {
-                            call.respondText("로그인 필요")
-                        }
+                if (accountData!!.stock >= data.amount) {
+                    val message = "sell,${data.amount},${accountData.id}".toByteArray()
+                    val datagram = DatagramPacket(
+                        message, message.size,
+                        InetSocketAddress("localhost", 8888)
+                    )
+                    withContext(Dispatchers.IO) {
+                        datagramSocket.send(datagram)
                     }
+                    var sqlQ: String =
+                        "UPDATE account SET money=money+${data.amount * price} WHERE id = '${accountData.id}'"
+                    var pstmt = connection.prepareStatement(sqlQ)
+                    pstmt.executeUpdate()
+                    pstmt.close()
+                    sqlQ = "UPDATE account SET stock=stock-${data.amount} WHERE id = '${accountData.id}'"
+                    pstmt = connection.prepareStatement(sqlQ)
+                    pstmt.executeUpdate()
+                    call.sessions.set(
+                        accountData.copy(
+                            money = accountData.money + data.amount * price,
+                            stock = accountData.stock - data.amount,
+                            outputMoney = accountData.outputMoney + data.amount * price
+                        )
+                    )
+                    call.respondText("""{"success":1}""", ContentType.Application.Json)
                 }
+                call.respondText("""{"success":0}""", ContentType.Application.Json)
             } catch (e: Exception) {
-                call.respondText("요청이 처리되지 못했습니다. \n$e")
+                call.respondText("""{"success":0}""", ContentType.Application.Json)
             }
-        }*/
+        }
         post("/admin") {
             val data = call.receive<AdminPacket>().execute
             val sendData = ("AdminTest : $data").toByteArray()
@@ -1318,7 +1539,8 @@ fun Application.configureRouting() {
                 val statement = connection.createStatement(
                     ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE
                 )
-                val result = statement.executeQuery("SELECT `id`, `pw`, `ip`, `money` FROM `account`")
+                val result =
+                    statement.executeQuery("SELECT `id`, `pw`, `money`, `stock`, `input`, `output` FROM `account`")
                 when (command[0] + command[1]) {
                     "creataccount" -> {
                         var tmp = true
@@ -1328,7 +1550,7 @@ fun Application.configureRouting() {
                             val id = command[2]
                             val pw = command[3]
                             val money = command[4]
-                            val sqlQ: String = "INSERT INTO `account` VALUES ('${id}', '${pw}', 'created', ${money}, 0)"
+                            val sqlQ: String = "INSERT INTO `account` VALUES ('${id}', '${pw}', ${money}, 0, 0, 0)"
                             val pstmt = connection.prepareStatement(sqlQ)
                             pstmt.executeUpdate()
                             pstmt.close()
@@ -1415,11 +1637,19 @@ fun Application.configureRouting() {
             val statement = connection.createStatement(
                 ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE
             )
-            val result = statement.executeQuery("SELECT `id`, `pw`, `money`, `stock` FROM `account`")
+            val result = statement.executeQuery("SELECT `id`, `pw`, `money`, `stock`, `input`, `output` FROM `account`")
             while (result.next()) {
                 if (result.getString("id") == data.id) {
                     if (result.getString("pw") == data.pw) {
-                        call.sessions.set(Session(data.id, result.getInt("money"), result.getInt("stock")))
+                        call.sessions.set(
+                            Session(
+                                data.id,
+                                result.getInt("money"),
+                                result.getInt("stock"),
+                                result.getInt("input"),
+                                result.getInt("output")
+                            )
+                        )
                     } else {
                         call.respondText("""{"loginfail":1}""", ContentType.Application.Json)
                     }
@@ -1430,27 +1660,7 @@ fun Application.configureRouting() {
             connection.close()
             statement.close()
         }
-        get("/text") {
-            call.respondText("asdfasdfasdf")
-        }
-        get("/json") {
-            call.respondText(""""{"key": "value"}"""", ContentType.Application.Json)
-            //call.respondFile(File("C:\\Users\\maxma\\IdeaProjects\\VirtualStockWeb\\asdf.json"))
-        }
-        post("/text") {
-            call.respondText("sdfghjk")
-        }
-        post("/json") {
-            call.respondText("""{"key": "value"}""", ContentType.Application.Json)
-            // call.respondFile(File("C:\\Users\\maxma\\IdeaProjects\\VirtualStockWeb\\asdf.json"))
-        }
-        get("/json1") {
-            call.respondText("""{"key": "value"}""", ContentType.Application.Json)
-        }
-        get("/json2") {
-            call.respondFile(File("C:\\Users\\maxma\\IdeaProjects\\VirtualStockWeb\\asdf.json"))
-        }
-        post("/now"){
+        get("/now") {
             val connection = DriverManager.getConnection(
                 "jdbc:mysql://localhost/ilbanbest",
                 "ilban", "ilbanbest"
@@ -1458,9 +1668,96 @@ fun Application.configureRouting() {
             val statement = connection.createStatement(
                 ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE
             )
-            val result = statement.executeQuery("SELECT `price` FROM `nowprice`")
+            var result = statement.executeQuery("SELECT * FROM `pricedb`")
+            result.next()
+            var text =
+                "${result.getInt(1)},${result.getInt(2)},${result.getInt(3)},${result.getInt(4)},${result.getInt(5)},${
+                    result.getInt(6)
+                },${result.getInt(7)},${result.getInt(8)},${result.getInt(9)},${result.getInt(10)}"
             while (result.next()) {
-                call.respondText("""{"price":${result.getInt("price")}}""", ContentType.Application.Json)
+                text += "/${result.getInt(1)},${result.getInt(2)},${result.getInt(3)},${result.getInt(4)},${
+                    result.getInt(
+                        5
+                    )
+                },${result.getInt(6)},${result.getInt(7)},${result.getInt(8)},${result.getInt(9)},${result.getInt(10)}"
+            }
+
+            result = statement.executeQuery("SELECT `price` FROM `nowprice`")
+            while (result.next()) {
+                call.respondText(
+                    """
+{
+"price" : ${result.getInt("price")},
+"pricedb" : "$text",
+}
+""".trimIndent(), ContentType.Application.Json
+                )
+            }
+        }
+        get("/onload") {
+            val connection = DriverManager.getConnection(
+                "jdbc:mysql://localhost/ilbanbest",
+                "ilban", "ilbanbest"
+            )
+            val statement = connection.createStatement(
+                ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE
+            )
+            val result = statement.executeQuery("SELECT * FROM `pricedb`")
+            result.next()
+            var text =
+                "${result.getInt(1)},${result.getInt(2)},${result.getInt(3)},${result.getInt(4)},${result.getInt(5)},${
+                    result.getInt(6)
+                },${result.getInt(7)},${result.getInt(8)},${result.getInt(9)},${result.getInt(10)}"
+            while (result.next()) {
+                text += "/${result.getInt(1)},${result.getInt(2)},${result.getInt(3)},${result.getInt(4)},${
+                    result.getInt(
+                        5
+                    )
+                },${result.getInt(6)},${result.getInt(7)},${result.getInt(8)},${result.getInt(9)},${result.getInt(10)}"
+            }
+
+            val accountData = call.sessions.get<Session>()
+            if (accountData == null) {
+                call.respondText(
+                    """
+{
+"id" : "0",
+"money" : "0",
+"stock" : "0",
+"suic" : "0",
+"now" : "${price}",
+"pricedb" : "$text"
+}
+                    """.trimIndent(), ContentType.Application.Json
+                )
+            } else {
+                if (accountData.inputMoney != 0) {
+                    call.respondText(
+                        """
+{
+"id" : "${accountData.id}",
+"money" : "${accountData.money}",
+"stock" : "${accountData.stock}",
+"suic" : "${(accountData.outputMoney + price * accountData.stock - accountData.inputMoney).toDouble() / accountData.inputMoney * 100}",
+"now" : "${price}",
+"pricedb" : "$text"
+}
+                    """.trimIndent(), ContentType.Application.Json
+                    )
+                } else {
+                    call.respondText(
+                        """
+{
+"id" : "${accountData.id}",
+"money" : "${accountData.money}",
+"stock" : "${accountData.stock}",
+"suic" : "0",
+"now" : "${price}",
+"pricedb" : "$text"
+}
+                    """.trimIndent(), ContentType.Application.Json
+                    )
+                }
             }
         }
     }
